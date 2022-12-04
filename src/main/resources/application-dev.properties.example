@@ -1,0 +1,4 @@
+spring.data.mongodb.host=localhost
+spring.data.mongodb.database=stardrive
+spring.data.mongodb.username=stardrive
+spring.data.mongodb.password=somepassword
