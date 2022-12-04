@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class StardriveApplication
+class StarDriveApplication
 
 fun main(args: Array<String>) {
-	runApplication<StardriveApplication>(*args)
+	runApplication<StarDriveApplication>(*args)
 }
