@@ -3,10 +3,10 @@ package sirs.stardrive
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
-data class Bruh(val bruh: String)
+data class HelloWorld(val message: String)
 
 @RestController
 class HelloController {
     @GetMapping("/")
-    fun index(): Bruh = Bruh("bruh")
+    fun index() = HelloWorld("Hello World!")
 }
