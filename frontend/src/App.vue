@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
 import HelloWorld from "./components/HelloWorld.vue";
+const message = "A tua mãe";
 </script>
 
 <template>
@@ -14,7 +15,7 @@ import HelloWorld from "./components/HelloWorld.vue";
     />
 
     <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <HelloWorld :msg="message" />
 
       <nav>
         <RouterLink to="/">Home</RouterLink>
