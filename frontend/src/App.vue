@@ -3,15 +3,15 @@ import { RouterView } from "vue-router";
 import { ref, computed } from "vue";
 
 const drawer = ref(false);
-const theme = ref("dark");
-
-const themeIcon = computed(() => (theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"));
-const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dark");
 
 const menuItems = [
   { title: "Home", icon: "mdi-home", to: "/" },
   { title: "About", icon: "mdi-account", to: "/about" },
 ];
+
+const theme = ref("dark");
+const themeIcon = computed(() => (theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"));
+const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dark");
 </script>
 
 <template>
@@ -30,7 +30,6 @@ const menuItems = [
       </v-list>
     </v-navigation-drawer>
 
-
     <v-app-bar>
       <template #prepend>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
@@ -40,6 +39,7 @@ const menuItems = [
 
       <template #append>
         <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
+        <v-btn>Log In</v-btn>
       </template>
     </v-app-bar>
 
