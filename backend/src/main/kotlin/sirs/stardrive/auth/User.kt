@@ -42,8 +42,6 @@ enum class Role {
 
 @Service
 class UserService(private val userRepository: UserRepository) : UserDetailsService {
-    fun getUser(username: String): User? = userRepository.findByUsername(username)
-
     override fun loadUserByUsername(username: String): UserDetails =
-        getUser(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
+        userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
 }
