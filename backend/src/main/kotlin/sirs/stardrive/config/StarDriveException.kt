@@ -1,4 +1,4 @@
-package sirs.stardrive
+package sirs.stardrive.config
 
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.ExceptionHandler
