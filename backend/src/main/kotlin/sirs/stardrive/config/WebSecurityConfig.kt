@@ -24,9 +24,9 @@ class WebSecurityConfig {
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http
-        .csrf().disable()
-        .authorizeHttpRequests()
-        .anyRequest().permitAll()
+            .csrf().disable()
+            .authorizeHttpRequests()
+            .anyRequest().permitAll()
         return http.build()
     }
 
