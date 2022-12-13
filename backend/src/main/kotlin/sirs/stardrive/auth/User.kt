@@ -13,7 +13,7 @@ import sirs.stardrive.config.ErrorMessage
 import sirs.stardrive.config.StarDriveException
 import kotlin.jvm.Throws
 
-
+/*
 @Document
 data class User(
     @MongoId val id: String,
@@ -41,9 +41,9 @@ enum class Role {
     ADMIN
 }
 
-@Service
 class UserService(private val userRepository: UserRepository) : UserDetailsService {
     @Throws(StarDriveException::class)
     override fun loadUserByUsername(username: String): UserDetails =
         userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
 }
+*/
