@@ -7,10 +7,13 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.Customizer
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.ProviderManager
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
+import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
@@ -42,14 +45,25 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
     }*/
 
     @Bean
+    fun authManager(
+        userDetailsService: UserDetailsService,
+        passwordEncoder: BCryptPasswordEncoder
+    ): AuthenticationManager =
+        ProviderManager(
+            DaoAuthenticationProvider().apply {
+                setUserDetailsService(userDetailsService)
+                setPasswordEncoder(passwordEncoder)
+            }
+        )
+
+    @Bean
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain = http
         .csrf { it.disable() }
-        .cors(Customizer.withDefaults())
-        .authorizeHttpRequests { it.anyRequest().authenticated() }
+        .cors { }
+        .authorizeHttpRequests { it.anyRequest().permitAll() }
         .oauth2ResourceServer { it.jwt() }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
-        .httpBasic { }
         .build()
 
     @Bean

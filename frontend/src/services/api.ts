@@ -1,6 +1,8 @@
 import axios from "axios";
 
-import { useAuthStore } from "../stores/auth";
+import { useAuthStore } from "@/stores/auth";
+import { LoginResponseDto } from "@/models/LoginResponseDto";
+import type { LoginRequestDto } from "@/models/LoginRequestDto";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -23,8 +25,15 @@ http.interceptors.request.use(
     }
 );
 
-export async function login(username: string, password: string) {
-    const res =  await http.post("/token", { username, password });
-    authStore.login(res.data);
-    console.log("Logged in", res.data);
+export async function login(loginRequest: LoginRequestDto): Promise<LoginResponseDto> {
+    try {
+        const res =  await http.post("/token", loginRequest);
+        const data = new LoginResponseDto(res.data);
+        authStore.login(data.token);
+        console.log("Logged in", res.data);
+        return data;
+    } catch (error) {
+        // TODO: Custom error handling
+        throw error;
+    }
 }
