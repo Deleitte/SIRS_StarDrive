@@ -10,12 +10,11 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.userdetails.User
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
-import org.springframework.security.provisioning.InMemoryUserDetailsManager
 import org.springframework.security.web.SecurityFilterChain
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
@@ -29,7 +28,6 @@ data class RSAKeys(
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(private val rsaKeys: RSAKeys) {
-
     /*@Bean
     fun customAuthenticationManager(http: HttpSecurity, passwordEncoder: BCryptPasswordEncoder): AuthenticationManager {
         val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
@@ -38,16 +36,6 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
             .passwordEncoder(passwordEncoder)
         return builder.build()
     }*/
-
-    @Bean
-    fun users(): InMemoryUserDetailsManager {
-        return InMemoryUserDetailsManager(
-            User.withUsername("edu")
-                .password("{noop}password")
-                .authorities("read")
-                .build()
-        )
-    }
 
     @Bean
     @Throws(Exception::class)
@@ -69,4 +57,7 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
                 .build()
         return NimbusJwtEncoder(ImmutableJWKSet(JWKSet(jwk)))
     }
+
+    @Bean
+    fun passwordEncoder() = BCryptPasswordEncoder()
 }
