@@ -7,6 +7,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
@@ -16,6 +17,9 @@ import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.web.SecurityFilterChain
+import org.springframework.web.cors.CorsConfiguration
+import org.springframework.web.cors.CorsConfigurationSource
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 
@@ -41,11 +45,11 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
     @Throws(Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain = http
         .csrf { it.disable() }
+        .cors(Customizer.withDefaults())
         .authorizeHttpRequests { it.anyRequest().authenticated() }
         .oauth2ResourceServer { it.jwt() }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .httpBasic { }
-        .cors { }
         .build()
 
     @Bean
@@ -61,4 +65,15 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
+
+    @Bean
+    fun corsConfigurationSource(): CorsConfigurationSource =
+        UrlBasedCorsConfigurationSource().apply {
+            registerCorsConfiguration("/**", CorsConfiguration().apply {
+                allowedOriginPatterns = listOf("*")
+                allowedMethods = listOf("*")
+                allowedHeaders = listOf("*")
+                allowCredentials = true
+            })
+        }
 }
