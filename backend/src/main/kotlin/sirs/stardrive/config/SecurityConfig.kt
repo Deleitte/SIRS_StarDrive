@@ -45,6 +45,7 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
         .oauth2ResourceServer { it.jwt() }
         .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) }
         .httpBasic { }
+        .cors { }
         .build()
 
     @Bean

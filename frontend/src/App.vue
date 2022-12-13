@@ -6,7 +6,7 @@ const drawer = ref(false);
 
 const menuItems = [
   { title: "Home", icon: "mdi-home", to: "/" },
-  { title: "About", icon: "mdi-account", to: "/about" },
+  { title: "Login", icon: "mdi-account", to: "/login" },
 ];
 
 const theme = ref("dark");
@@ -39,7 +39,6 @@ const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dar
 
       <template #append>
         <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
-        <v-btn>Log In</v-btn>
       </template>
     </v-app-bar>
 
