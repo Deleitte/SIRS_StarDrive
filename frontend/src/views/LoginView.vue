@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { login } from "@/services/api";
-import {LoginRequestDto} from "@/models/LoginRequestDto";
+import { LoginRequestDto } from "@/models/LoginRequestDto";
+import router from "@/router";
 
 const username = ref("");
 const password = ref("");
 const showPassword = ref(false);
 
-function onSubmit() {
+async function onSubmit() {
   const loginRequest = new LoginRequestDto(username.value, password.value);
-  login(loginRequest);
+  await login(loginRequest);
+  await router.push("/");
 }
 </script>
 

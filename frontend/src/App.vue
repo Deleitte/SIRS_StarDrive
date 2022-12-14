@@ -1,17 +1,42 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import Cookies from "js-cookie";
+
+import { useAuthStore } from "@/stores/auth";
 
 const drawer = ref(false);
 
 const menuItems = [
   { title: "Home", icon: "mdi-home", to: "/" },
-  { title: "Login", icon: "mdi-account", to: "/login" },
 ];
 
 const theme = ref("dark");
 const themeIcon = computed(() => (theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"));
-const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dark");
+const toggleTheme = () => {
+  theme.value = theme.value === "dark" ? "light" : "dark";
+  localStorage.setItem("theme", theme.value);
+};
+
+const authStore = useAuthStore();
+
+onMounted(() => {
+  theme.value = localStorage.getItem("theme") ?? "dark";
+  const authToken = Cookies.get("authToken");
+  if (authToken)
+    authStore.setToken(authToken);
+});
+
+authStore.$subscribe((_, state) => {
+  if (state.token)
+    Cookies.set("authToken", state.token, { expires: authStore.expiresAt });
+  else
+    Cookies.remove("authToken");
+});
+
+const logout = () => {
+  authStore.setToken("");
+};
 </script>
 
 <template>
@@ -39,6 +64,7 @@ const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dar
 
       <template #append>
         <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
+        <v-btn :icon="authStore.token ? 'mdi-logout' : 'mdi-login'" @click="authStore.token ? logout() : $router.push('/login')"></v-btn>
       </template>
     </v-app-bar>
 

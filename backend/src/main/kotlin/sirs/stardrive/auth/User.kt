@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import sirs.stardrive.config.ErrorMessage
 import sirs.stardrive.config.StarDriveException
+import java.util.*
 
 @Document
 data class User(
@@ -45,7 +46,7 @@ class UserService(private val userRepository: UserRepository, passwordEncoder: B
     init {
         // TODO: do this only in dev mode
         if (userRepository.count() == 0L)
-            userRepository.save(User("1", "admin", passwordEncoder.encode("admin"), Role.ADMIN))
+            userRepository.save(User(UUID.randomUUID().toString(), "admin", passwordEncoder.encode("admin"), Role.ADMIN))
     }
 
     @Throws(StarDriveException::class)

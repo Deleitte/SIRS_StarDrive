@@ -25,13 +25,11 @@ http.interceptors.request.use(
     }
 );
 
-export async function login(loginRequest: LoginRequestDto): Promise<LoginResponseDto> {
+export async function login(loginRequest: LoginRequestDto) {
     try {
         const res =  await http.post("/token", loginRequest);
         const data = new LoginResponseDto(res.data);
-        authStore.login(data.token);
-        console.log("Logged in", res.data);
-        return data;
+        authStore.setToken(data.token);
     } catch (error) {
         // TODO: Custom error handling
         throw error;

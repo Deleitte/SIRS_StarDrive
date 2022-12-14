@@ -1,10 +1,9 @@
 package sirs.stardrive.config
 
-import com.nimbusds.jose.jwk.JWK
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
-import com.nimbusds.jose.jwk.source.ImmutableJWKSet
-import org.springframework.boot.context.properties.ConfigurationProperties
+import com.nimbusds.jose.jwk.source.JWKSource
+import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -23,26 +22,29 @@ import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
+import java.security.KeyPairGenerator
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
+import java.util.*
 
-@ConfigurationProperties(prefix = "rsa")
-data class RSAKeys(
-    val publicKey: RSAPublicKey,
-    val privateKey: RSAPrivateKey
-)
+fun generateRSA(): RSAKey {
+    val keyPairGenerator = KeyPairGenerator.getInstance("RSA").apply {
+        initialize(2048)
+    }
+    val keyPair = keyPairGenerator.generateKeyPair()
+    val publicKey = keyPair.public as RSAPublicKey
+    val privateKey = keyPair.private as RSAPrivateKey
+
+    return RSAKey.Builder(publicKey)
+        .privateKey(privateKey)
+        .keyID(UUID.randomUUID().toString())
+        .build()
+}
 
 @Configuration
 @EnableWebSecurity
-class SecurityConfig(private val rsaKeys: RSAKeys) {
-    /*@Bean
-    fun customAuthenticationManager(http: HttpSecurity, passwordEncoder: BCryptPasswordEncoder): AuthenticationManager {
-        val builder = http.getSharedObject(AuthenticationManagerBuilder::class.java)
-        builder
-            .userDetailsService(userDetailsService)
-            .passwordEncoder(passwordEncoder)
-        return builder.build()
-    }*/
+class SecurityConfig {
+    private lateinit var rsaKey: RSAKey
 
     @Bean
     fun authManager(
@@ -67,15 +69,19 @@ class SecurityConfig(private val rsaKeys: RSAKeys) {
         .build()
 
     @Bean
-    fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeys.publicKey).build()
+    fun jwkSource(): JWKSource<SecurityContext> {
+        rsaKey = generateRSA()
+        val jwkSet = JWKSet(rsaKey)
+        return JWKSource { jwkSelector, _ -> jwkSelector.select(jwkSet) }
+    }
 
     @Bean
-    fun jwtEncoder(): JwtEncoder {
-        val jwk: JWK = RSAKey.Builder(rsaKeys.publicKey)
-                .privateKey(rsaKeys.privateKey)
-                .build()
-        return NimbusJwtEncoder(ImmutableJWKSet(JWKSet(jwk)))
-    }
+    fun jwtDecoder(jwks: JWKSource<SecurityContext>): JwtDecoder =
+        NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build()
+
+    @Bean
+    fun jwtEncoder(jwks: JWKSource<SecurityContext>): JwtEncoder =
+        NimbusJwtEncoder(jwks)
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()

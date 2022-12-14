@@ -1,9 +1,12 @@
 <script setup lang="ts">
-fetch("http://localhost:8080")
-  .then((response) => response.json())
-  .then((data) => console.log(data));
+import { useAuthStore } from "@/stores/auth";
+import { computed } from "vue";
+
+const authStore = useAuthStore();
+const message = computed(() =>
+    authStore.token ? `Welcome ${authStore.username} (${authStore.role})` : "You are not logged in");
 </script>
 
 <template>
-  <h1>Home</h1>
+  <h1>{{ message }}</h1>
 </template>
