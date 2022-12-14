@@ -1,8 +1,9 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 
 import { useAuthStore } from "@/stores/auth";
 import { LoginResponseDto } from "@/models/LoginResponseDto";
 import type { LoginRequestDto } from "@/models/LoginRequestDto";
+import { StarDriveError } from "@/models/StarDriveError";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -31,7 +32,22 @@ export async function login(loginRequest: LoginRequestDto) {
         const data = new LoginResponseDto(res.data);
         authStore.setToken(data.token);
     } catch (error) {
-        // TODO: Custom error handling
-        throw error;
+        throw new StarDriveError(
+          await errorMessage(error as AxiosError),
+          // @ts-ignore
+          error.response.data.code,
+        );
+    }
+}
+
+async function errorMessage(error: AxiosError) {
+    // @ts-ignore
+    if (error.response.data.message.includes("Credenciais")) {
+        return "Wrong password";
+    } else if (error.response) {
+        // @ts-ignore
+        return error.response.data.message;
+    } else {
+        return `Unknown error: ${error.message}`;
     }
 }
