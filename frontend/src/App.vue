@@ -63,8 +63,12 @@ const logout = () => {
       <v-app-bar-title>StarDrive</v-app-bar-title>
 
       <template #append>
-        <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
-        <v-btn :icon="authStore.token ? 'mdi-logout' : 'mdi-login'" @click="authStore.token ? logout() : $router.push('/login')"></v-btn>
+        <v-btn :prepend-icon="themeIcon" @click="toggleTheme">Toggle theme</v-btn>
+        <v-btn
+          :prepend-icon="authStore.token ? 'mdi-logout' : 'mdi-login'"
+          @click="authStore.token ? logout() : $router.push('/login')">
+          {{ authStore.token ? 'Logout' : 'Login' }}
+        </v-btn>
       </template>
     </v-app-bar>
 

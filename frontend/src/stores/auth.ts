@@ -11,7 +11,10 @@ export const useAuthStore = defineStore("auth", () => {
 
   function setToken(authToken: string) {
     token.value = authToken;
-    payload.value = new JWTPayloadData(JSON.parse(atob(authToken.split(".")[1])));
+    if (authToken)
+      payload.value = new JWTPayloadData(JSON.parse(atob(authToken.split(".")[1])));
+    else
+      payload.value = null;
   }
 
   return { token, username, role, expiresAt, setToken };
