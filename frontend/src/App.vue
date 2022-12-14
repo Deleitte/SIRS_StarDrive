@@ -42,8 +42,8 @@ const toggleTheme = () => (theme.value = theme.value === "dark" ? "light" : "dar
       </template>
     </v-app-bar>
 
-    <v-main>
-      <v-container>
+    <v-main class="fill-height">
+      <v-container class="fill-height">
         <router-view />
       </v-container>
     </v-main>
