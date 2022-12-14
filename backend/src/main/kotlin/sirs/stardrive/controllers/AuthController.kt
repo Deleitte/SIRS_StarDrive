@@ -1,19 +1,18 @@
-package sirs.stardrive.auth
+package sirs.stardrive.controllers
 
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-
-data class LoginRequestDto(val username: String, val password: String)
-
-data class LoginResponseDto(val token: String)
+import sirs.stardrive.models.LoginDtos
+import sirs.stardrive.models.LoginResponseDto
+import sirs.stardrive.services.TokenService
 
 @RestController
 class AuthController(private val tokenService: TokenService, private val authenticationManager: AuthenticationManager) {
     @PostMapping("/token")
-    fun token(@RequestBody userLogin: LoginRequestDto): LoginResponseDto =
+    fun token(@RequestBody userLogin: LoginDtos): LoginResponseDto =
         LoginResponseDto(
             tokenService.generateToken(
                 authenticationManager.authenticate(

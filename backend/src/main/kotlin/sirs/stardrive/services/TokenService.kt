@@ -1,4 +1,4 @@
-package sirs.stardrive.auth
+package sirs.stardrive.services
 
 import org.springframework.security.core.Authentication
 import org.springframework.security.oauth2.jwt.JwtClaimsSet

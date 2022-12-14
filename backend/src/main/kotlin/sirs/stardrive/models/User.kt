@@ -40,16 +40,3 @@ enum class Role {
     EXTERNAL,
     ADMIN
 }
-
-@Service
-class UserService(private val userRepository: UserRepository, passwordEncoder: BCryptPasswordEncoder) : UserDetailsService {
-    init {
-        // TODO: do this only in dev mode
-        if (userRepository.count() == 0L)
-            userRepository.save(User(UUID.randomUUID().toString(), "admin", passwordEncoder.encode("admin"), Role.ADMIN))
-    }
-
-    @Throws(StarDriveException::class)
-    override fun loadUserByUsername(username: String): UserDetails =
-        userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
-}
