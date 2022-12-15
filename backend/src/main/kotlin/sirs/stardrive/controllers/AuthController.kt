@@ -5,14 +5,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import sirs.stardrive.models.LoginDtos
+import sirs.stardrive.models.LoginRequestDto
 import sirs.stardrive.models.LoginResponseDto
 import sirs.stardrive.services.TokenService
 
 @RestController
 class AuthController(private val tokenService: TokenService, private val authenticationManager: AuthenticationManager) {
     @PostMapping("/token")
-    fun token(@RequestBody userLogin: LoginDtos): LoginResponseDto =
+    fun token(@RequestBody userLogin: LoginRequestDto): LoginResponseDto =
         LoginResponseDto(
             tokenService.generateToken(
                 authenticationManager.authenticate(

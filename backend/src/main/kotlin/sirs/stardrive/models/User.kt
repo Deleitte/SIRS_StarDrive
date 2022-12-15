@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.stereotype.Repository
 import java.util.*
 
 @Document
@@ -26,7 +27,8 @@ data class User(
     override fun isEnabled(): Boolean = true
 }
 
-interface UserRepository : MongoRepository<User, String> {
+@Repository
+interface UserRepository : MongoRepository<User, ObjectId> {
     fun findByUsername(username: String): User?
 }
 
