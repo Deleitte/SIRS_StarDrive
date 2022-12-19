@@ -6,7 +6,7 @@ export const useAuthStore = defineStore("auth", () => {
   const token = ref("");
   const payload = ref<JWTPayloadData | null>(null);
   const username = computed(() => payload.value?.username ?? "");
-  const role = computed(() => payload.value?.role ?? "");
+  const role = computed(() => payload.value?.scope ?? "");
   const expiresAt = computed(() => payload.value?.expiresAt ?? new Date());
 
   function setToken(authToken: string) {

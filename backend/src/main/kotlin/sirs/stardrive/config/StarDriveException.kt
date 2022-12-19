@@ -11,7 +11,8 @@ enum class ErrorMessage(val message: String) {
     ACCESS_DENIED("Access denied"),
     TEAM_NOT_FOUND("Team not found"),
     EMPLOYEE_NOT_FOUND("Employee not found"),
-    EMPLOYEE_ALREADY_EXISTS("Employee already exists");
+    EMPLOYEE_ALREADY_EXISTS("Employee already exists"),
+    USER_ALREADY_EXISTS("User already exists"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)

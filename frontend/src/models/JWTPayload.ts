@@ -3,7 +3,7 @@ export interface JWTPayload {
     iat: number;
     iss: string;
     sub: string;
-    role: string;
+    scope: string;
 }
 
 export class JWTPayloadData {
@@ -11,7 +11,7 @@ export class JWTPayloadData {
     issuedAt!: Date;
     issuer!: string;
     username!: string;
-    role!: string;
+    scope!: string;
 
     constructor(json?: JWTPayload) {
         if (json) {
@@ -19,7 +19,7 @@ export class JWTPayloadData {
             this.issuedAt = new Date(json.iat * 1000);
             this.issuer = json.iss;
             this.username = json.sub;
-            this.role = json.role;
+            this.scope = json.scope;
         }
     }
 }

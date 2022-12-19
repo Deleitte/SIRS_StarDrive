@@ -19,8 +19,11 @@ data class User(
     val role: Role,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
+    constructor(newUserDto: NewUserDto) : this(newUserDto.name, newUserDto.username, newUserDto.password, Role.NEW)
+
     override fun getAuthorities(): Collection<GrantedAuthority> =
         listOf(SimpleGrantedAuthority(role.name))
+
     override fun getPassword(): String = password
     override fun getUsername(): String = username
     override fun isAccountNonExpired(): Boolean = true
@@ -29,12 +32,15 @@ data class User(
     override fun isEnabled(): Boolean = true
 }
 
+data class NewUserDto(val name: String, val username: String, var password: String)
+
 @Repository
 interface UserRepository : MongoRepository<User, ObjectId> {
     fun findByUsername(username: String): User?
 }
 
 enum class Role {
+    NEW,
     EMPLOYEE,
     ENGINEER,
     EXTERNAL,
