@@ -12,15 +12,16 @@ import java.time.temporal.ChronoUnit
 class TokenService(private val encoder: JwtEncoder) {
     fun generateToken(authentication: Authentication): String {
         val now: Instant = Instant.now()
-        val role: String = authentication.authorities
-            .joinToString(" ") { it.authority }
+        val scope: String = authentication.authorities.joinToString(" ") { it.authority }
+
+        println("Scope: $scope")
 
         val claims = JwtClaimsSet.builder()
             .issuer("self")
             .issuedAt(now)
             .expiresAt(now.plus(1, ChronoUnit.HOURS))
             .subject(authentication.name)
-            .claim("role", role)
+            .claim("scope", scope)
             .build()
         return encoder.encode(JwtEncoderParameters.from(claims)).tokenValue
     }

@@ -4,11 +4,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import sirs.stardrive.auth.Role
-import sirs.stardrive.auth.User
-import sirs.stardrive.auth.UserRepository
 import sirs.stardrive.config.ErrorMessage
 import sirs.stardrive.config.StarDriveException
+import sirs.stardrive.models.Role
+import sirs.stardrive.models.User
+import sirs.stardrive.models.UserRepository
 import java.util.*
 
 @Service

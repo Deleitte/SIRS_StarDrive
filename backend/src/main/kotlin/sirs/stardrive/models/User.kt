@@ -1,4 +1,4 @@
-package sirs.stardrive.auth
+package sirs.stardrive.models
 
 import org.bson.types.ObjectId
 import org.springframework.data.mongodb.core.index.Indexed
@@ -18,7 +18,8 @@ data class User(
     val role: Role,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
-    override fun getAuthorities(): Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority(role.name))
+    override fun getAuthorities(): Collection<GrantedAuthority> =
+        listOf(SimpleGrantedAuthority(role.name))
     override fun getPassword(): String = password
     override fun getUsername(): String = username
     override fun isAccountNonExpired(): Boolean = true
