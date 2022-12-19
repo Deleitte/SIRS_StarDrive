@@ -32,13 +32,14 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 @Document
 data class Employee(
     @Indexed(unique = true) @DocumentReference val user: User,
-    val name: String,
     @DocumentReference val team: Team,
     @MongoId val id: ObjectId? = null
 )
 
+data class NewEmployeeDto(val username: String, val team: String)
+
 data class EmployeeDto(val name: String, val username: String, val team: String) {
-    constructor(employee: Employee) : this(employee.name, employee.user.username, employee.team.name)
+    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.team.name)
 }
 
 @Repository

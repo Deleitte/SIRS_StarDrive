@@ -8,7 +8,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 enum class ErrorMessage(val message: String) {
     USER_NOT_FOUND("User not found"),
-    ACCESS_DENIED("Access denied");
+    ACCESS_DENIED("Access denied"),
+    TEAM_NOT_FOUND("Team not found"),
+    EMPLOYEE_NOT_FOUND("Employee not found"),
+    EMPLOYEE_ALREADY_EXISTS("Employee already exists");
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)

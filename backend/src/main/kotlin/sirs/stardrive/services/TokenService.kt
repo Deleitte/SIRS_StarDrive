@@ -14,8 +14,6 @@ class TokenService(private val encoder: JwtEncoder) {
         val now: Instant = Instant.now()
         val scope: String = authentication.authorities.joinToString(" ") { it.authority }
 
-        println("Scope: $scope")
-
         val claims = JwtClaimsSet.builder()
             .issuer("self")
             .issuedAt(now)

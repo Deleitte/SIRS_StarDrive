@@ -12,15 +12,10 @@ import sirs.stardrive.services.TokenService
 @RestController
 class AuthController(private val tokenService: TokenService, private val authenticationManager: AuthenticationManager) {
     @PostMapping("/token")
-    fun token(@RequestBody userLogin: LoginRequestDto): LoginResponseDto =
-        LoginResponseDto(
-            tokenService.generateToken(
-                authenticationManager.authenticate(
-                    UsernamePasswordAuthenticationToken(
-                        userLogin.username,
-                        userLogin.password
-                    )
-                )
-            )
-        )
+    fun token(@RequestBody userLogin: LoginRequestDto): LoginResponseDto {
+        val authenticationToken = UsernamePasswordAuthenticationToken(userLogin.username, userLogin.password)
+        val authentication = authenticationManager.authenticate(authenticationToken)
+        val token = tokenService.generateToken(authentication)
+        return LoginResponseDto(token)
+    }
 }

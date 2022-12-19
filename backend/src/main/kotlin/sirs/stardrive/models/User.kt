@@ -13,7 +13,8 @@ import java.util.*
 
 @Document
 data class User(
-    @Indexed(unique = true) @get:JvmName("name") val username: String,
+    val name: String,
+    @Indexed(unique = true) @get:JvmName("user_name") val username: String,
     @get:JvmName("pass") val password: String,
     val role: Role,
     @MongoId val id: ObjectId? = null

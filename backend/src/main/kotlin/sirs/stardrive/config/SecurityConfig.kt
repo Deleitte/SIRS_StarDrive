@@ -52,13 +52,14 @@ class SecurityConfig {
     fun authManager(
         userDetailsService: UserDetailsService,
         passwordEncoder: BCryptPasswordEncoder
-    ): AuthenticationManager =
-        ProviderManager(
-            DaoAuthenticationProvider().apply {
-                setUserDetailsService(userDetailsService)
-                setPasswordEncoder(passwordEncoder)
-            }
-        )
+    ): AuthenticationManager {
+        val authenticationProvider = DaoAuthenticationProvider().apply {
+            setUserDetailsService(userDetailsService)
+            setPasswordEncoder(passwordEncoder)
+        }
+
+        return ProviderManager(authenticationProvider)
+    }
 
     @Bean
     @Throws(Exception::class)

@@ -17,7 +17,7 @@ class UserService(private val userRepository: UserRepository, passwordEncoder: B
     init {
         // TODO: do this only in dev mode
         if (userRepository.count() == 0L)
-            userRepository.save(User("admin", passwordEncoder.encode("admin"), Role.ADMIN))
+            userRepository.save(User("Vasco Correia", "admin", passwordEncoder.encode("admin"), Role.ADMIN))
     }
 
     @Throws(StarDriveException::class)
