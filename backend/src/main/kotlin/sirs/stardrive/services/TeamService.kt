@@ -24,7 +24,10 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
 
         return try {
-            EmployeeDto(employeeRepository.save(Employee(user, team)))
+            val employee = employeeRepository.save(Employee(user))
+            team.employees.add(employee)
+            teamRepository.save(team)
+            EmployeeDto(employee)
         } catch (e: Exception) {
             throw StarDriveException(ErrorMessage.EMPLOYEE_ALREADY_EXISTS)
         }

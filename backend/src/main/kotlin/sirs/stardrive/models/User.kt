@@ -16,7 +16,7 @@ data class User(
     val name: String,
     @Indexed(unique = true) @get:JvmName("user_name") val username: String,
     @get:JvmName("pass") val password: String,
-    val role: Role,
+    var role: Role,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
     constructor(newUserDto: NewUserDto) : this(newUserDto.name, newUserDto.username, newUserDto.password, Role.NEW)

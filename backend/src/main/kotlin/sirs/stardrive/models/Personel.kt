@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository
 data class Team(
     @Indexed(unique = true) val name: String,
     val salary: Int,
-    @DocumentReference val employees: List<Employee> = emptyList(),
+    @DocumentReference val employees: MutableList<Employee> = mutableListOf(),
     @MongoId val id: ObjectId? = null
 ) {
     constructor(newTeamDto: NewTeamDto) : this(newTeamDto.name, newTeamDto.salary)
@@ -32,14 +32,13 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 @Document
 data class Employee(
     @Indexed(unique = true) @DocumentReference val user: User,
-    @DocumentReference val team: Team,
     @MongoId val id: ObjectId? = null
 )
 
 data class NewEmployeeDto(val username: String, val team: String)
 
-data class EmployeeDto(val name: String, val username: String, val team: String) {
-    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.team.name)
+data class EmployeeDto(val name: String, val username: String) {
+    constructor(employee: Employee) : this(employee.user.name, employee.user.username)
 }
 
 @Repository
