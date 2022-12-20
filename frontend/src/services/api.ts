@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 import { LoginResponseDto } from "@/models/LoginResponseDto";
 import type { LoginRequestDto } from "@/models/LoginRequestDto";
 import { StarDriveError } from "@/models/StarDriveError";
+import type { RegisterRequestDto } from "@/models/RegisterRequestDto";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -29,6 +30,20 @@ http.interceptors.request.use(
 export async function login(loginRequest: LoginRequestDto) {
     try {
         const res =  await http.post("/token", loginRequest);
+        const data = new LoginResponseDto(res.data);
+        authStore.setToken(data.token);
+    } catch (error) {
+        throw new StarDriveError(
+          await errorMessage(error as AxiosError),
+          // @ts-ignore
+          error.response.data.code,
+        );
+    }
+}
+
+export async function register(registerRequest: RegisterRequestDto) {
+    try {
+        const res = await http.post("/register", registerRequest);
         const data = new LoginResponseDto(res.data);
         authStore.setToken(data.token);
     } catch (error) {
