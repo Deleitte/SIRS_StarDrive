@@ -24,7 +24,8 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
 
         return try {
-            val employee = employeeRepository.save(Employee(user))
+            var employee = employeeRepository.findByUser(user) ?: Employee(user)
+            employee = employeeRepository.save(employee)
             team.employees.add(employee)
             teamRepository.save(team)
             EmployeeDto(employee)

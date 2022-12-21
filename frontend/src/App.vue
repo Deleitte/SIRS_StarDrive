@@ -12,7 +12,6 @@ const authStore = useAuthStore();
 const menuItems = [
   { title: "Login", icon: "mdi-login", to: "/login", showIf: () => !authStore.loggedIn },
   { title: "Register", icon: "mdi-account-plus", to: "/register", showIf: () => !authStore.loggedIn },
-  { title: "Logout", icon: "mdi-logout", to: "/logout", showIf: () => authStore.loggedIn },
   { title: "Home", icon: "mdi-home", to: "/", showIf: () => authStore.loggedIn },
 ];
 
@@ -69,6 +68,7 @@ const logout = () => {
 
       <template #append>
         <v-btn :prepend-icon="themeIcon" @click="toggleTheme">Toggle theme</v-btn>
+        <v-btn v-if="authStore.loggedIn" prepend-icon="mdi-logout" @click="logout">Logout</v-btn>
       </template>
     </v-app-bar>
 

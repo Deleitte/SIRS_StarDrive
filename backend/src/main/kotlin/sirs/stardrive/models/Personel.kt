@@ -31,7 +31,7 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 
 @Document
 data class Employee(
-    @Indexed(unique = true) @DocumentReference val user: User,
+    @DocumentReference val user: User,
     @MongoId val id: ObjectId? = null
 )
 
