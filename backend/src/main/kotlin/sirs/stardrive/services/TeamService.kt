@@ -11,9 +11,9 @@ class TeamService(
     private val employeeRepository: EmployeeRepository,
     private val userRepository: UserRepository
 ) {
-    fun getTeams(): List<TeamDto> = teamRepository.findAll().map { TeamDto(it) }
+    fun getTeams(): List<TeamDto> = teamRepository.findAll().map { TeamDto(it, employeeRepository.findByTeam(it)) }
 
-    fun createTeam(newTeamDto: NewTeamDto): TeamDto = TeamDto(teamRepository.save(Team(newTeamDto)))
+    fun createTeam(newTeamDto: NewTeamDto): TeamDto = TeamDto(teamRepository.save(Team(newTeamDto)), emptyList())
 
     fun getEmployees(): List<EmployeeDto> = employeeRepository.findAll().map { EmployeeDto(it) }
 
@@ -24,10 +24,10 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
 
         return try {
-            var employee = employeeRepository.findByUser(user) ?: Employee(user)
+            var employee = employeeRepository.findByUser(user) ?: Employee(user, team)
+            employee.team = team
             employee = employeeRepository.save(employee)
-            team.employees.add(employee)
-            teamRepository.save(team)
+            user.role = Role.EMPLOYEE
             EmployeeDto(employee)
         } catch (e: Exception) {
             throw StarDriveException(ErrorMessage.EMPLOYEE_ALREADY_EXISTS)
