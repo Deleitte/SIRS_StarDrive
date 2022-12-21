@@ -13,6 +13,8 @@ enum class ErrorMessage(val message: String) {
     EMPLOYEE_NOT_FOUND("Employee not found"),
     EMPLOYEE_ALREADY_EXISTS("Employee already exists"),
     USER_ALREADY_EXISTS("User already exists"),
+    PART_NOT_FOUND("Part not found"),
+    PART_ALREADY_EXISTS("Part already exists"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -1,13 +1,7 @@
 package sirs.stardrive.controllers
 
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
-import sirs.stardrive.models.EmployeeDto
-import sirs.stardrive.models.NewEmployeeDto
-import sirs.stardrive.models.NewTeamDto
-import sirs.stardrive.models.TeamDto
+import org.springframework.web.bind.annotation.*
+import sirs.stardrive.models.*
 import sirs.stardrive.services.TeamService
 
 @RestController
@@ -21,4 +15,8 @@ class TeamController(private val teamService: TeamService) {
     @PostMapping("/employees")
     fun createEmployee(@RequestBody newEmployeeDto: NewEmployeeDto): EmployeeDto =
         teamService.createEmployee(newEmployeeDto)
+
+    @PatchMapping("/teams/salary/{teamName}")
+    fun changeTeamSalary(@PathVariable teamName: String, @RequestBody newSalary: UpdateTeamSalaryDto): TeamDto =
+        teamService.changeTeamSalary(teamName, newSalary.salary)
 }

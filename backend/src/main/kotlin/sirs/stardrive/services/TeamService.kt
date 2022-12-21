@@ -24,7 +24,7 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
 
         return try {
-            val employee = employeeRepository.save(Employee(user))
+            val employee = employeeRepository.save(Employee(user, newEmployeeDto.absentWorkingDays, newEmployeeDto.parentalLeaves))
             team.employees.add(employee)
             teamRepository.save(team)
             EmployeeDto(employee)
@@ -32,4 +32,10 @@ class TeamService(
             throw StarDriveException(ErrorMessage.EMPLOYEE_ALREADY_EXISTS)
         }
     }
+     fun changeTeamSalary(teamName: String, newSalary: Int): TeamDto {
+         val team = teamRepository.findByName(teamName)
+             ?: throw StarDriveException(ErrorMessage.TEAM_NOT_FOUND)
+         team.salary = newSalary
+         return TeamDto(teamRepository.save(team))
+     }
 }

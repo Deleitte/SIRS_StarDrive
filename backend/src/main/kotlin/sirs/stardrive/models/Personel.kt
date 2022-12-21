@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository
 @Document
 data class Team(
     @Indexed(unique = true) val name: String,
-    val salary: Int,
+    var salary: Int,
     @DocumentReference val employees: MutableList<Employee> = mutableListOf(),
     @MongoId val id: ObjectId? = null
 ) {
@@ -23,6 +23,7 @@ data class NewTeamDto(val name: String, val salary: Int)
 data class TeamDto(val name: String, val salary: Int, val employees: List<EmployeeDto>) {
     constructor(team: Team) : this(team.name, team.salary, team.employees.map { EmployeeDto(it) })
 }
+data class UpdateTeamSalaryDto(val salary: Int)
 
 @Repository
 interface TeamRepository : MongoRepository<Team, ObjectId> {
@@ -32,13 +33,20 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 @Document
 data class Employee(
     @Indexed(unique = true) @DocumentReference val user: User,
+    val absentWorkingDays : Int,
+    val parentalLeaves : Int,
     @MongoId val id: ObjectId? = null
 )
 
-data class NewEmployeeDto(val username: String, val team: String)
+data class NewEmployeeDto(
+    val username: String,
+    val team: String,
+    val absentWorkingDays: Int,
+    val parentalLeaves: Int
+    )
 
-data class EmployeeDto(val name: String, val username: String) {
-    constructor(employee: Employee) : this(employee.user.name, employee.user.username)
+data class EmployeeDto(val name: String, val username: String, val absentWorkingDays: Int, val parentalLeaves: Int) {
+    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves)
 }
 
 @Repository
