@@ -7,9 +7,16 @@ import { useAuthStore } from "@/stores/auth";
 
 const drawer = ref(false);
 
+const authStore = useAuthStore();
+
 const menuItems = [
-  { title: "Home", icon: "mdi-home", to: "/" },
+  { title: "Login", icon: "mdi-login", to: "/login", showIf: () => !authStore.loggedIn },
+  { title: "Register", icon: "mdi-account-plus", to: "/register", showIf: () => !authStore.loggedIn },
+  { title: "Logout", icon: "mdi-logout", to: "/logout", showIf: () => authStore.loggedIn },
+  { title: "Home", icon: "mdi-home", to: "/", showIf: () => authStore.loggedIn },
 ];
+
+const filteredMenuItems = computed(() => menuItems.filter((item) => item.showIf()));
 
 const theme = ref("dark");
 const themeIcon = computed(() => (theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"));
@@ -17,8 +24,6 @@ const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
   localStorage.setItem("theme", theme.value);
 };
-
-const authStore = useAuthStore();
 
 onMounted(() => {
   theme.value = localStorage.getItem("theme") ?? "dark";
@@ -44,7 +49,7 @@ const logout = () => {
     <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item
-          v-for="item in menuItems"
+          v-for="item in filteredMenuItems"
           :key="item.title"
           :to="item.to"
           :prepend-icon="item.icon"
@@ -64,11 +69,6 @@ const logout = () => {
 
       <template #append>
         <v-btn :prepend-icon="themeIcon" @click="toggleTheme">Toggle theme</v-btn>
-        <v-btn
-          :prepend-icon="authStore.token ? 'mdi-logout' : 'mdi-login'"
-          @click="authStore.token ? logout() : $router.push('/login')">
-          {{ authStore.token ? 'Logout' : 'Login' }}
-        </v-btn>
       </template>
     </v-app-bar>
 
