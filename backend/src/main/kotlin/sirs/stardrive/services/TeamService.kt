@@ -11,9 +11,9 @@ class TeamService(
     private val employeeRepository: EmployeeRepository,
     private val userRepository: UserRepository
 ) {
-    fun getTeams(): List<TeamDto> = teamRepository.findAll().map { TeamDto(it) }
+    fun getTeams(): List<TeamDto> = teamRepository.findAll().map { TeamDto(it, employeeRepository.findByTeam(it)) }
 
-    fun createTeam(newTeamDto: NewTeamDto): TeamDto = TeamDto(teamRepository.save(Team(newTeamDto)))
+    fun createTeam(newTeamDto: NewTeamDto): TeamDto = TeamDto(teamRepository.save(Team(newTeamDto)), emptyList())
 
     fun getEmployees(): List<EmployeeDto> = employeeRepository.findAll().map { EmployeeDto(it) }
 
@@ -24,18 +24,30 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
 
         return try {
-            val employee = employeeRepository.save(Employee(user, newEmployeeDto.absentWorkingDays, newEmployeeDto.parentalLeaves))
-            team.employees.add(employee)
-            teamRepository.save(team)
+            var employee = employeeRepository.findByUser(user) ?: Employee(
+                user,
+                team,
+                newEmployeeDto.absentWorkingDays,
+                newEmployeeDto.parentalLeaves
+            )
+            employee.id?.let {
+                employee.team = team
+                employee.absentWorkingDays = newEmployeeDto.absentWorkingDays
+                employee.parentalLeaves = newEmployeeDto.parentalLeaves
+            }
+
+            employee = employeeRepository.save(employee)
+            user.role = Role.EMPLOYEE
             EmployeeDto(employee)
         } catch (e: Exception) {
             throw StarDriveException(ErrorMessage.EMPLOYEE_ALREADY_EXISTS)
         }
     }
-     fun changeTeamSalary(teamName: String, newSalary: Int): TeamDto {
-         val team = teamRepository.findByName(teamName)
-             ?: throw StarDriveException(ErrorMessage.TEAM_NOT_FOUND)
-         team.salary = newSalary
-         return TeamDto(teamRepository.save(team))
-     }
+
+    fun changeTeamSalary(teamName: String, newSalary: Int): TeamDto {
+        val team = teamRepository.findByName(teamName)
+            ?: throw StarDriveException(ErrorMessage.TEAM_NOT_FOUND)
+        team.salary = newSalary
+        return TeamDto(teamRepository.save(team), employeeRepository.findByTeam(team))
+    }
 }

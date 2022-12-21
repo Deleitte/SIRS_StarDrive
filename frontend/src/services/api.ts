@@ -5,6 +5,7 @@ import { LoginResponseDto } from "@/models/LoginResponseDto";
 import type { LoginRequestDto } from "@/models/LoginRequestDto";
 import { StarDriveError } from "@/models/StarDriveError";
 import type { RegisterRequestDto } from "@/models/RegisterRequestDto";
+import { TeamDto } from "@/models/TeamDto";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -46,6 +47,19 @@ export async function register(registerRequest: RegisterRequestDto) {
         const res = await http.post("/register", registerRequest);
         const data = new LoginResponseDto(res.data);
         authStore.setToken(data.token);
+    } catch (error) {
+        throw new StarDriveError(
+          await errorMessage(error as AxiosError),
+          // @ts-ignore
+          error.response.data.code,
+        );
+    }
+}
+
+export async function getTeams(): Promise<TeamDto[]> {
+    try {
+        const res = await http.get("/teams");
+        return res.data.map((t: any) => new TeamDto(t));
     } catch (error) {
         throw new StarDriveError(
           await errorMessage(error as AxiosError),

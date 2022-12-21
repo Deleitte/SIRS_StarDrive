@@ -8,6 +8,7 @@ export const useAuthStore = defineStore("auth", () => {
   const username = computed(() => payload.value?.username ?? "");
   const role = computed(() => payload.value?.scope ?? "");
   const expiresAt = computed(() => payload.value?.expiresAt ?? new Date());
+  const loggedIn = computed(() => token.value !== "");
 
   function setToken(authToken: string) {
     token.value = authToken;
@@ -17,5 +18,5 @@ export const useAuthStore = defineStore("auth", () => {
       payload.value = null;
   }
 
-  return { token, username, role, expiresAt, setToken };
+  return { token, username, role, expiresAt, setToken, loggedIn };
 });

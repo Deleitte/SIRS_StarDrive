@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository
 data class Team(
     @Indexed(unique = true) val name: String,
     var salary: Int,
-    @DocumentReference val employees: MutableList<Employee> = mutableListOf(),
     @MongoId val id: ObjectId? = null
 ) {
     constructor(newTeamDto: NewTeamDto) : this(newTeamDto.name, newTeamDto.salary)
@@ -21,7 +20,7 @@ data class Team(
 data class NewTeamDto(val name: String, val salary: Int)
 
 data class TeamDto(val name: String, val salary: Int, val employees: List<EmployeeDto>) {
-    constructor(team: Team) : this(team.name, team.salary, team.employees.map { EmployeeDto(it) })
+    constructor(team: Team, employees: List<Employee>) : this(team.name, team.salary, employees.map { EmployeeDto(it) })
 }
 data class UpdateTeamSalaryDto(val salary: Int)
 
@@ -32,9 +31,10 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 
 @Document
 data class Employee(
-    @Indexed(unique = true) @DocumentReference val user: User,
-    val absentWorkingDays : Int,
-    val parentalLeaves : Int,
+    @DocumentReference val user: User,
+    @DocumentReference var team: Team,
+    var absentWorkingDays : Int,
+    var parentalLeaves : Int,
     @MongoId val id: ObjectId? = null
 )
 
@@ -52,4 +52,5 @@ data class EmployeeDto(val name: String, val username: String, val absentWorking
 @Repository
 interface EmployeeRepository : MongoRepository<Employee, ObjectId> {
     fun findByUser(user: User): Employee?
+    fun findByTeam(team: Team): List<Employee>
 }

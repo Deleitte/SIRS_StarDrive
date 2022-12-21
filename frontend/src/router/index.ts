@@ -15,12 +15,14 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const authStore = useAuthStore();
-  if (to.meta.requiresAuth && !authStore.token) {
-    next({ name: "login" });
-  } else {
+  const { loggedIn, role } = useAuthStore();
+  const redirectTo = loggedIn ? "home" : "login";
+  // @ts-ignore
+  const shouldRedirect = to.meta.requiredAuth && !to.meta.requiredAuth(loggedIn, role);
+  if (shouldRedirect)
+    next({ name: redirectTo });
+  else
     next();
-  }
 });
 
 export default router;
