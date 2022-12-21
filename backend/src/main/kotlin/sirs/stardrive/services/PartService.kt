@@ -14,7 +14,7 @@ class PartService(private val partRepository: PartRepository) {
 
     fun updatePartQuantity(ref: Int, quantity: Int) : PartDto {
         val part = partRepository.findByRef(ref) ?: throw StarDriveException(ErrorMessage.PART_NOT_FOUND)
-        part.quantity = quantity
+        part.quantity += quantity
         return PartDto(partRepository.save(part))
     }
 

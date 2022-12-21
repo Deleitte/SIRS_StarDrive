@@ -23,7 +23,7 @@ data class PartDto(val ref: Int, val quantity: Int, val price: Int, val name: St
 
 data class NewPartDto(val ref: Int, val quantity: Int, val price: Int, val name: String)
 
-data class UpdatePartQuantityDto(val quantity: Int, val price: Int, val name: String)
+data class UpdatePartQuantityDto(val quantity: Int)
 
 @Repository
 interface PartRepository : MongoRepository<Part, ObjectId> {
