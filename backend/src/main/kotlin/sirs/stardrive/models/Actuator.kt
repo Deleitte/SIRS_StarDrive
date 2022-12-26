@@ -6,15 +6,15 @@ import org.springframework.data.mongodb.core.mapping.Document
 import org.springframework.data.mongodb.core.mapping.MongoId
 import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
 
 const val DEFAULT_PING_INTERVAL = 5000
 
 @Document
 data class Actuator(
     @Indexed(unique = true) val name: String,
-    val pingInterval: Int = DEFAULT_PING_INTERVAL,
-    val lastPing: LocalDateTime? = null,
+    var pingInterval: Int = DEFAULT_PING_INTERVAL,
+    var on : Boolean = false,
+    var damaged : Boolean = false,
     @MongoId val id: ObjectId? = null
 ) {
     constructor(newActuatorDto: NewActuatorDto) : this(newActuatorDto.name, newActuatorDto.pingInterval)
@@ -29,6 +29,14 @@ data class NewActuatorDto(val name: String, val pingInterval: Int = DEFAULT_PING
     constructor(actuator: Actuator) : this(actuator.name, actuator.pingInterval)
 }
 
-data class ActuatorDto(val name: String, val pingInterval: Int, val lastPing: LocalDateTime? = null) {
-    constructor(actuator: Actuator) : this(actuator.name, actuator.pingInterval, actuator.lastPing)
+data class ActuatorDto(val name: String, val pingInterval: Int, val on: Boolean, val damaged: Boolean) {
+    constructor(actuator: Actuator) : this(actuator.name, actuator.pingInterval, actuator.on, actuator.damaged)
+}
+
+data class UpdatePingIntervalDto(val pingInterval: Int) {
+    constructor(actuator: Actuator) : this(actuator.pingInterval)
+}
+
+data class UpdateActuatorStatusDto(val damaged: Boolean) {
+    constructor(actuator: Actuator) : this(actuator.damaged)
 }

@@ -26,14 +26,10 @@ class TeamService(
         return try {
             var employee = employeeRepository.findByUser(user) ?: Employee(
                 user,
-                team,
-                newEmployeeDto.absentWorkingDays,
-                newEmployeeDto.parentalLeaves
+                team
             )
             employee.id?.let {
                 employee.team = team
-                employee.absentWorkingDays = newEmployeeDto.absentWorkingDays
-                employee.parentalLeaves = newEmployeeDto.parentalLeaves
             }
 
             employee = employeeRepository.save(employee)

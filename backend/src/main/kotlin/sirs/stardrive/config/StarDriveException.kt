@@ -15,6 +15,10 @@ enum class ErrorMessage(val message: String) {
     USER_ALREADY_EXISTS("User already exists"),
     PART_NOT_FOUND("Part not found"),
     PART_ALREADY_EXISTS("Part already exists"),
+    ACTUATOR_ALREADY_EXISTS("Actuator already exists"),
+    ACTUATOR_NOT_FOUND("Actuator not found"),
+    SENSOR_ALREADY_EXISTS("Sensor already exists"),
+    SENSOR_NOT_FOUND("Sensor not found"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -33,17 +33,15 @@ interface TeamRepository : MongoRepository<Team, ObjectId> {
 data class Employee(
     @DocumentReference val user: User,
     @DocumentReference var team: Team,
-    var absentWorkingDays : Int,
-    var parentalLeaves : Int,
+    var absentWorkingDays : Int = 0,
+    var parentalLeaves : Int = 0,
     @MongoId val id: ObjectId? = null
 )
 
 data class NewEmployeeDto(
     val username: String,
-    val team: String,
-    val absentWorkingDays: Int,
-    val parentalLeaves: Int
-    )
+    val team: String
+)
 
 data class EmployeeDto(val name: String, val username: String, val absentWorkingDays: Int, val parentalLeaves: Int) {
     constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves)
