@@ -6,6 +6,8 @@ import type { LoginRequestDto } from "@/models/LoginRequestDto";
 import { StarDriveError } from "@/models/StarDriveError";
 import type { RegisterRequestDto } from "@/models/RegisterRequestDto";
 import { TeamDto } from "@/models/TeamDto";
+import {SensorDto} from "@/models/SensorDto";
+import {ActuatorDto} from "@/models/ActuatorDto";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -65,6 +67,32 @@ export async function getTeams(): Promise<TeamDto[]> {
           await errorMessage(error as AxiosError),
           // @ts-ignore
           error.response.data.code,
+        );
+    }
+}
+
+export async function getSensors(): Promise<SensorDto[]> {
+    try {
+        const res = await http.get("/sensors");
+        return res.data.map((s: any) => new SensorDto(s));
+    } catch (error) {
+        throw new StarDriveError(
+            await errorMessage(error as AxiosError),
+            // @ts-ignore
+            error.response.data.code,
+        );
+    }
+}
+
+export async function getActuators() : Promise<ActuatorDto[]> {
+    try {
+        const res = await http.get("/actuators");
+        return res.data.map((a: any) => new ActuatorDto(a));
+    } catch (error) {
+        throw new StarDriveError(
+            await errorMessage(error as AxiosError),
+            // @ts-ignore
+            error.response.data.code,
         );
     }
 }

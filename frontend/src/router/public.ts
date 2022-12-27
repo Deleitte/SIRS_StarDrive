@@ -20,4 +20,9 @@ export default [
           requiredAuth: (loggedIn: boolean, role: string) => !loggedIn,
     },
   },
+  {
+    path: "/controlpanel",
+    name: "controlpanel",
+    component: () => import("../views/ControlPanelView.vue"),
+  }
 ];
