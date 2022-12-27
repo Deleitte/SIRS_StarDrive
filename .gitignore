@@ -1,3 +1,4 @@
+.direnv
 application-dev.properties
 .DS_Store
 node_modules
