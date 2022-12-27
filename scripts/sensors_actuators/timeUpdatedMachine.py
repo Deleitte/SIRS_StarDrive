@@ -1,7 +1,7 @@
 from time import sleep
 
 
-class TimedUpdateMachine:
+class TimeUpdatedMachine:
     def __init__(self, name, ping_interval):
         self.name = name
         self.ping_interval = ping_interval

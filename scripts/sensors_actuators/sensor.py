@@ -4,7 +4,7 @@ import timeUpdatedMachine
 import sys
 
 
-class Sensor(timeUpdatedMachine.TimedUpdateMachine):
+class Sensor(timeUpdatedMachine.TimeUpdatedMachine):
     def __init__(self, name, ping_interval):
         super().__init__(name, ping_interval)
 
