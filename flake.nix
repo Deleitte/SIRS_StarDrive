@@ -13,7 +13,9 @@
         devShell = pkgs.mkShell {
           buildInputs = with pkgs; [
             gradle
-            kotlin
+            jdk17
+            nodejs
+            mongosh
           ];
         };
       }
