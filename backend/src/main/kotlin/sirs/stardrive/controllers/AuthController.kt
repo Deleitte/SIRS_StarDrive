@@ -1,10 +1,12 @@
 package sirs.stardrive.controllers
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
+import sirs.stardrive.models.ChangePasswordDto
 import sirs.stardrive.models.LoginRequestDto
 import sirs.stardrive.models.LoginResponseDto
 import sirs.stardrive.models.NewUserDto
@@ -32,5 +34,11 @@ class AuthController(
         val authentication = authenticationManager.authenticate(authenticationToken)
         val token = tokenService.generateToken(authentication)
         return LoginResponseDto(token)
+    }
+
+    @PostMapping("/changepassword")
+    @PreAuthorize("isAuthenticated()")
+    fun changePassword(@RequestBody changePasswordDto: ChangePasswordDto) {
+        userService.changePassword(changePasswordDto)
     }
 }

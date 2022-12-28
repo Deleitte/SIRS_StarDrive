@@ -15,7 +15,7 @@ import java.util.*
 data class User(
     val name: String,
     @Indexed(unique = true) @get:JvmName("user_name") val username: String,
-    @get:JvmName("pass") val password: String,
+    @get:JvmName("pass") var password: String,
     var role: Role,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
@@ -33,6 +33,8 @@ data class User(
 }
 
 data class NewUserDto(val name: String, val username: String, var password: String)
+
+data class ChangePasswordDto(val oldPassword: String, val newPassword: String)
 
 @Repository
 interface UserRepository : MongoRepository<User, ObjectId> {
