@@ -1,6 +1,6 @@
-import {computed, ref} from "vue";
+import { computed, ref } from "vue";
 import { defineStore } from "pinia";
-import {JWTPayloadData} from "@/models/JWTPayload";
+import { JWTPayloadData } from "@/models/JWTPayload";
 
 export const useAuthStore = defineStore("auth", () => {
   const token = ref("");
@@ -13,9 +13,10 @@ export const useAuthStore = defineStore("auth", () => {
   function setToken(authToken: string) {
     token.value = authToken;
     if (authToken)
-      payload.value = new JWTPayloadData(JSON.parse(atob(authToken.split(".")[1])));
-    else
-      payload.value = null;
+      payload.value = new JWTPayloadData(
+        JSON.parse(atob(authToken.split(".")[1]))
+      );
+    else payload.value = null;
   }
 
   return { token, username, role, expiresAt, setToken, loggedIn };

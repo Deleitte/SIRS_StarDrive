@@ -17,7 +17,15 @@ export default [
     name: "register",
     component: () => import("../views/RegisterView.vue"),
     meta: {
-          requiredAuth: (loggedIn: boolean, role: string) => !loggedIn,
+      requiredAuth: (loggedIn: boolean, role: string) => !loggedIn,
+    },
+  },
+  {
+    path: "/changepassword",
+    name: "changepassword",
+    component: () => import("../views/ChangePassword.vue"),
+    meta: {
+      requiredAuth: (loggedIn: boolean, role: string) => loggedIn,
     },
   },
   {

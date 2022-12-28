@@ -4,6 +4,7 @@ import { ref, computed, onMounted } from "vue";
 import Cookies from "js-cookie";
 
 import { useAuthStore } from "@/stores/auth";
+import router from "@/router";
 
 const drawer = ref(false);
 
@@ -38,8 +39,9 @@ authStore.$subscribe((_, state) => {
     Cookies.remove("authToken");
 });
 
-const logout = () => {
+const logout = async () => {
   authStore.setToken("");
+  await router.push({ name: "login" });
 };
 </script>
 

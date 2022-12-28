@@ -4,6 +4,9 @@ import { login } from "@/services/api";
 import { LoginRequestDto } from "@/models/LoginRequestDto";
 import router from "@/router";
 import { StarDriveError } from "@/models/StarDriveError";
+import {useRedirectStore} from "@/stores/redirect";
+
+const { url, setUrl } = useRedirectStore();
 
 const username = ref("");
 const password = ref("");
@@ -19,7 +22,12 @@ async function onSubmit() {
   try {
     const loginRequest = new LoginRequestDto(username.value, password.value);
     await login(loginRequest);
-    await router.push("/");
+    if (url) {
+      await router.push(url);
+      setUrl(undefined);
+    } else {
+      await router.push("/");
+    }
   } catch (error) {
     const starDriveError = error as StarDriveError;
     if (starDriveError.message.includes('User'))
