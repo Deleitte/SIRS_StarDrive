@@ -8,6 +8,7 @@ import type { RegisterRequestDto } from "@/models/RegisterRequestDto";
 import { TeamDto } from "@/models/TeamDto";
 import {SensorDto} from "@/models/SensorDto";
 import {ActuatorDto} from "@/models/ActuatorDto";
+import {StatsDto} from "@/models/StatsDto";
 
 const authStore = useAuthStore();
 const http = axios.create({
@@ -92,6 +93,17 @@ export async function getActuators() : Promise<ActuatorDto[]> {
         throw new StarDriveError(
             await errorMessage(error as AxiosError),
             // @ts-ignore
+            error.response.data.code,
+        );
+    }
+}
+
+export async function getStats(): Promise<StatsDto> {
+    try {
+        const res = await http.get("/stats");
+        return new StatsDto(res.data);
+    } catch (error) {
+        throw new StarDriveError(await errorMessage(error as AxiosError),
             error.response.data.code,
         );
     }
