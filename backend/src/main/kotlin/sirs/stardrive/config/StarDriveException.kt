@@ -19,6 +19,7 @@ enum class ErrorMessage(val message: String) {
     ACTUATOR_NOT_FOUND("Actuator not found"),
     SENSOR_ALREADY_EXISTS("Sensor already exists"),
     SENSOR_NOT_FOUND("Sensor not found"),
+    OTP_ALREADY_EXISTS("Sensor not found"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
