@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
+	implementation("com.google.guava:guava:31.1-jre")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
 	annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
