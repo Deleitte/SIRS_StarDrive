@@ -59,7 +59,6 @@ class AuthController(
     @PostMapping("/token/revoke")
     @PreAuthorize("isAuthenticated()")
     fun revokeToken() {
-        // TODO this probably shouldn't be like this
         val authentication = SecurityContextHolder.getContext().authentication!!
         tokenService.revokeRefreshToken(authentication)
     }

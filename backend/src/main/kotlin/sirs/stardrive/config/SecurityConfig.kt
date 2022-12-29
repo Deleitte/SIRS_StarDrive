@@ -37,7 +37,7 @@ fun generateRSA(): RSAKey {
     val keyPairGenerator = KeyPairGenerator.getInstance("RSA").apply {
         initialize(2048)
     }
-    // TODO these keys should probably be persisted (if server is restarted, all tokens are invalidated)
+    
     val keyPair = keyPairGenerator.generateKeyPair()
     val publicKey = keyPair.public as RSAPublicKey
     val privateKey = keyPair.private as RSAPrivateKey
