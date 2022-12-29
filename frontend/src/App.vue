@@ -1,32 +1,59 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
 import { ref, computed, onMounted } from "vue";
-import Cookies from "js-cookie";
 
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
+import { refreshToken } from "@/services/api";
 
 const drawer = ref(false);
 
 const authStore = useAuthStore();
 
 const menuItems = [
-  { title: "Login", icon: "mdi-login", to: "/login", showIf: () => !authStore.loggedIn },
-  { title: "Register", icon: "mdi-account-plus", to: "/register", showIf: () => !authStore.loggedIn },
-  { title: "Home", icon: "mdi-home", to: "/", showIf: () => authStore.loggedIn },
+  {
+    title: "Login",
+    icon: "mdi-login",
+    to: "/login",
+    showIf: () => !authStore.loggedIn,
+  },
+  {
+    title: "Register",
+    icon: "mdi-account-plus",
+    to: "/register",
+    showIf: () => !authStore.loggedIn,
+  },
+  {
+    title: "Home",
+    icon: "mdi-home",
+    to: "/",
+    showIf: () => authStore.loggedIn,
+  },
 ];
 
-const filteredMenuItems = computed(() => menuItems.filter((item) => item.showIf()));
+const filteredMenuItems = computed(() =>
+  menuItems.filter((item) => item.showIf())
+);
 
 const theme = ref("dark");
-const themeIcon = computed(() => (theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"));
+const themeIcon = computed(() =>
+  theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"
+);
 const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
   localStorage.setItem("theme", theme.value);
 };
 
-onMounted(() => {
+onMounted(async () => {
   theme.value = localStorage.getItem("theme") ?? "dark";
+  // TODO: need a better on first load than this
+  if (!authStore.token) {
+    try {
+      await refreshToken();
+    } catch (err) {
+      /* empty */
+    }
+  }
 });
 
 const logout = async () => {
@@ -60,8 +87,15 @@ const logout = async () => {
       <v-app-bar-title>StarDrive</v-app-bar-title>
 
       <template #append>
-        <v-btn :prepend-icon="themeIcon" @click="toggleTheme">Toggle theme</v-btn>
-        <v-btn v-if="authStore.loggedIn" prepend-icon="mdi-logout" @click="logout">Logout</v-btn>
+        <v-btn :prepend-icon="themeIcon" @click="toggleTheme"
+          >Toggle theme</v-btn
+        >
+        <v-btn
+          v-if="authStore.loggedIn"
+          prepend-icon="mdi-logout"
+          @click="logout"
+          >Logout</v-btn
+        >
       </template>
     </v-app-bar>
 

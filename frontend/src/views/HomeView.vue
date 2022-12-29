@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
-import {getStats, getTeams} from "@/services/api";
-import { TeamDto } from "@/models/TeamDto";
-import {StatsDto} from "@/models/StatsDto";
+import { getStats } from "@/services/api";
+import { StatsDto } from "@/models/StatsDto";
 
 const authStore = useAuthStore();
 const message = computed(() =>
-    authStore.token ? `Welcome ${authStore.username} (${authStore.role})` : "You are not logged in");
+  authStore.token
+    ? `Welcome ${authStore.username} (${authStore.role})`
+    : "You are not logged in"
+);
 
 /*
 const teams = ref<TeamDto[]>([]);
@@ -26,6 +28,7 @@ async function fetchStats() {
   try {
     stats.value = await getStats();
   } catch (error) {
+    /* empty */
   }
 }
 
@@ -42,20 +45,28 @@ fetchStats();
       <v-col>
         <v-container>
           <v-row>
-            <v-col class="d-flex justify-center align-center"><h1>Working sensors</h1></v-col>
+            <v-col class="d-flex justify-center align-center"
+              ><h1>Working sensors</h1></v-col
+            >
           </v-row>
           <v-row>
-            <v-col class="d-flex justify-center align-center">{{stats?.sensors}}</v-col>
+            <v-col class="d-flex justify-center align-center">{{
+              stats?.sensors
+            }}</v-col>
           </v-row>
         </v-container>
       </v-col>
       <v-col>
         <v-container>
           <v-row>
-            <v-col class="d-flex justify-center align-center"><h1>Working actuators</h1></v-col>
+            <v-col class="d-flex justify-center align-center"
+              ><h1>Working actuators</h1></v-col
+            >
           </v-row>
           <v-row>
-            <v-col class="d-flex justify-center align-center">{{stats?.actuators}}</v-col>
+            <v-col class="d-flex justify-center align-center">{{
+              stats?.actuators
+            }}</v-col>
           </v-row>
         </v-container>
       </v-col>
@@ -64,36 +75,42 @@ fetchStats();
       <v-col>
         <v-container>
           <v-row>
-            <v-col class="d-flex justify-center align-center"><h1>Energy consumption</h1></v-col>
+            <v-col class="d-flex justify-center align-center"
+              ><h1>Energy consumption</h1></v-col
+            >
           </v-row>
           <v-row>
-              <v-col class="d-flex justify-center align-center">
-                <v-progress-circular
-                    model-value="95"
-                    :size="100"
-                    :width="15"
-                    color="primary">
-                  {{stats?.energyConsumption}}
-                </v-progress-circular>
-              </v-col>
+            <v-col class="d-flex justify-center align-center">
+              <v-progress-circular
+                model-value="95"
+                :size="100"
+                :width="15"
+                color="primary"
+              >
+                {{ stats?.energyConsumption }}
+              </v-progress-circular>
+            </v-col>
           </v-row>
         </v-container>
       </v-col>
       <v-col>
         <v-container>
           <v-row>
-            <v-col class="d-flex justify-center align-center"><h1>Cars in production</h1></v-col>
+            <v-col class="d-flex justify-center align-center"
+              ><h1>Cars in production</h1></v-col
+            >
           </v-row>
           <v-row>
             <v-col class="d-flex justify-center align-center">
-            <v-progress-circular
+              <v-progress-circular
                 model-value="80"
                 :size="100"
                 :width="15"
-                color="primary">
-              {{stats?.carsInProduction}}
-            </v-progress-circular>
-              </v-col>
+                color="primary"
+              >
+                {{ stats?.carsInProduction }}
+              </v-progress-circular>
+            </v-col>
           </v-row>
         </v-container>
       </v-col>

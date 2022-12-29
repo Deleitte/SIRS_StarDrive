@@ -11,16 +11,16 @@ import { ActuatorDto } from "@/models/ActuatorDto";
 import { StatsDto } from "@/models/StatsDto";
 import type { ChangePasswordDto } from "@/models/ChangePasswordDto";
 
-const authStore = useAuthStore();
 const http = axios.create({
   baseURL: "http://localhost:8080",
   headers: { "Content-Type": "application/json" },
+  withCredentials: true,
 });
 
 http.interceptors.request.use(
   (config) => {
     if (config.headers && !config.headers.Authorization) {
-      const token = authStore.token;
+      const { token } = useAuthStore();
       if (token) config.headers.Authorization = `Bearer ${token}`;
     }
 
@@ -42,10 +42,10 @@ http.interceptors.response.use(
         originalConfig._retry = true;
 
         try {
-          const res = await http.post("/token/refresh");
-          const data = new LoginResponseDto(res.data);
           const { setToken } = useAuthStore();
-          setToken(data.token);
+          setToken("");
+          originalConfig.headers.Authorization = undefined;
+          await refreshToken();
 
           return http(originalConfig);
         } catch (_error) {
@@ -62,7 +62,8 @@ export async function login(loginRequest: LoginRequestDto) {
   try {
     const res = await http.post("/token", loginRequest);
     const data = new LoginResponseDto(res.data);
-    authStore.setToken(data.token);
+    const { setToken } = useAuthStore();
+    setToken(data.token);
   } catch (error) {
     throw new StarDriveError(
       await errorMessage(error as AxiosError),
@@ -76,7 +77,8 @@ export async function register(registerRequest: RegisterRequestDto) {
   try {
     const res = await http.post("/register", registerRequest);
     const data = new LoginResponseDto(res.data);
-    authStore.setToken(data.token);
+    const { setToken } = useAuthStore();
+    setToken(data.token);
   } catch (error) {
     throw new StarDriveError(
       await errorMessage(error as AxiosError),
@@ -84,6 +86,13 @@ export async function register(registerRequest: RegisterRequestDto) {
       error.response.data.code
     );
   }
+}
+
+export async function refreshToken() {
+  const res = await http.post("/token/refresh");
+  const data = new LoginResponseDto(res.data);
+  const { setToken } = useAuthStore();
+  setToken(data.token);
 }
 
 export async function changePassword(changePasswordDto: ChangePasswordDto) {
