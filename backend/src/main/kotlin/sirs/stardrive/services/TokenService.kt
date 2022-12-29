@@ -60,8 +60,9 @@ class TokenService(
     @Throws(StarDriveException::class)
     fun generateRefreshToken(authentication: Authentication): String {
         val username = authentication.name
-        if (userService.hasRefreshToken(username))
-            throw StarDriveException(ErrorMessage.VALID_REFRESH_TOKEN)
+        // TODO: I think we should automatically revoke refresh tokens on new login attempts
+        /*if (userService.hasRefreshToken(username))
+            throw StarDriveException(ErrorMessage.VALID_REFRESH_TOKEN)*/
 
         val refreshToken = generateToken(
             authentication,

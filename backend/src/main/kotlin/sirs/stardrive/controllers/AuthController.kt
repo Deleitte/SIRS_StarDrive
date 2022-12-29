@@ -7,6 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.server.resource.authentication.BearerTokenAuthenticationToken
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider
 import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -22,6 +24,7 @@ import sirs.stardrive.services.UserService
 class AuthController(
     private val tokenService: TokenService,
     private val authenticationManager: AuthenticationManager,
+    private val refreshTokenAuthProvider: JwtAuthenticationProvider,
     private val userService: UserService
 ) {
 
@@ -39,19 +42,17 @@ class AuthController(
             isHttpOnly = true
             path = "/"
         }
+
         response.addCookie(refreshTokenCookie)
         return LoginResponseDto(token)
     }
 
     @PostMapping("/token/refresh")
-    @PreAuthorize("isAuthenticated()")
     fun refreshToken(
         request: HttpServletRequest,
-        @CookieValue(defaultValue = "null", name = "refresh-token") refreshToken: String
+        @CookieValue(name = "refresh-token") refreshToken: String
     ): LoginResponseDto {
-        // TODO this probably shouldn't be like this
-        // TODO this probably doesnt work if the access token is expired
-        val authentication = SecurityContextHolder.getContext().authentication!!
+        val authentication = refreshTokenAuthProvider.authenticate(BearerTokenAuthenticationToken(refreshToken))
         return LoginResponseDto(tokenService.renewAccessToken(authentication, refreshToken))
     }
 
