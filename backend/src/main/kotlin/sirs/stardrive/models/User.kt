@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Document
 data class User(
@@ -17,9 +16,13 @@ data class User(
     @Indexed(unique = true) @get:JvmName("user_name") val username: String,
     @get:JvmName("pass") var password: String,
     var role: Role,
+    val totpKey: String,
+    var refreshToken: String?,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
-    constructor(newUserDto: NewUserDto) : this(newUserDto.name, newUserDto.username, newUserDto.password, Role.NEW)
+    constructor(newUserDto: NewUserDto) : this(
+        newUserDto.name, newUserDto.username, newUserDto.password, Role.NEW, newUserDto.otpKey, null
+    )
 
     override fun getAuthorities(): Collection<GrantedAuthority> =
         listOf(SimpleGrantedAuthority(role.name))
@@ -32,7 +35,7 @@ data class User(
     override fun isEnabled(): Boolean = true
 }
 
-data class NewUserDto(val name: String, val username: String, var password: String)
+data class NewUserDto(val name: String, val username: String, var password: String, val otpKey: String)
 
 data class ChangePasswordDto(val oldPassword: String, val newPassword: String)
 

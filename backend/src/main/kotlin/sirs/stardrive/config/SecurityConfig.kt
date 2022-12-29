@@ -4,8 +4,10 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -24,14 +26,17 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import java.security.KeyPairGenerator
+import java.security.SecureRandom
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
 import java.util.*
+import javax.crypto.spec.SecretKeySpec
 
 fun generateRSA(): RSAKey {
     val keyPairGenerator = KeyPairGenerator.getInstance("RSA").apply {
         initialize(2048)
     }
+    // TODO these keys should probably be persisted (if server is restarted, all tokens are invalidated)
     val keyPair = keyPairGenerator.generateKeyPair()
     val publicKey = keyPair.public as RSAPublicKey
     val privateKey = keyPair.private as RSAPrivateKey
@@ -42,11 +47,18 @@ fun generateRSA(): RSAKey {
         .build()
 }
 
+fun generateOtpKey(): SecretKeySpec {
+    val seed = ByteArray(128 / 8)
+    SecureRandom().nextBytes(seed)
+    return SecretKeySpec(seed, "AES")
+}
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 class SecurityConfig {
-    private lateinit var rsaKey: RSAKey
+    private lateinit var authTokenKey: RSAKey
+    private lateinit var refreshTokenKey: RSAKey
 
     @Bean
     fun authManager(
@@ -72,22 +84,51 @@ class SecurityConfig {
         .build()
 
     @Bean
-    fun jwkSource(): JWKSource<SecurityContext> {
-        rsaKey = generateRSA()
-        val jwkSet = JWKSet(rsaKey)
+    @Qualifier("accessToken")
+    fun accessJwkSource(): JWKSource<SecurityContext> {
+        authTokenKey = generateRSA()
+        val jwkSet = JWKSet(authTokenKey)
         return JWKSource { jwkSelector, _ -> jwkSelector.select(jwkSet) }
     }
 
     @Bean
-    fun jwtDecoder(jwks: JWKSource<SecurityContext>): JwtDecoder =
-        NimbusJwtDecoder.withPublicKey(rsaKey.toRSAPublicKey()).build()
+    @Qualifier("refreshToken")
+    fun refreshJwkSource(): JWKSource<SecurityContext> {
+        refreshTokenKey = generateRSA();
+        val jwkSet = JWKSet(refreshTokenKey)
+        return JWKSource { jwkSelector, context -> jwkSelector.select(jwkSet) }
+    }
 
     @Bean
-    fun jwtEncoder(jwks: JWKSource<SecurityContext>): JwtEncoder =
+    @Primary
+    @Qualifier("accessTokenDecoder")
+    fun accessJwtDecoder(@Qualifier("accessToken") jwks: JWKSource<SecurityContext>): JwtDecoder =
+        NimbusJwtDecoder.withPublicKey(authTokenKey.toRSAPublicKey()).build()
+
+    @Bean
+    @Qualifier("refreshTokenDecoder")
+    fun refreshJwtDecoder(@Qualifier("refreshToken") jwks: JWKSource<SecurityContext>): JwtDecoder =
+        NimbusJwtDecoder.withPublicKey(refreshTokenKey.toRSAPublicKey()).build()
+
+    @Bean
+    @Primary
+    @Qualifier("accessTokenEncoder")
+    fun accessJwtEncoder(@Qualifier("accessToken") jwks: JWKSource<SecurityContext>): JwtEncoder =
+        NimbusJwtEncoder(jwks)
+
+    @Bean
+    @Qualifier("refreshTokenEncoder")
+    fun refreshJwtEncoder(@Qualifier("refreshToken") jwks: JWKSource<SecurityContext>): JwtEncoder =
         NimbusJwtEncoder(jwks)
 
     @Bean
     fun passwordEncoder() = BCryptPasswordEncoder()
+
+    @Bean
+    fun refreshTokenEncoder() = BCryptPasswordEncoder()
+
+    @Bean
+    fun totpSecretEncoder() = BCryptPasswordEncoder()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource =
