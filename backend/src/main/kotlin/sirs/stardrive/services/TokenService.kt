@@ -42,7 +42,7 @@ class TokenService(
     fun generateAccessToken(authentication: Authentication) = generateToken(
         authentication,
         accessTokenEncoder,
-        Duration(5, ChronoUnit.MINUTES),
+        Duration(5, ChronoUnit.MINUTES), // TODO: duration in application.properties
         listOf(
             Claim("scope", authentication.authorities.joinToString(" ") as Any),
             Claim("2FA", false as Any)
@@ -60,14 +60,10 @@ class TokenService(
     @Throws(StarDriveException::class)
     fun generateRefreshToken(authentication: Authentication): String {
         val username = authentication.name
-        // TODO: I think we should automatically revoke refresh tokens on new login attempts
-        /*if (userService.hasRefreshToken(username))
-            throw StarDriveException(ErrorMessage.VALID_REFRESH_TOKEN)*/
-
         val refreshToken = generateToken(
             authentication,
             refreshTokenEncoder,
-            Duration(1, ChronoUnit.DAYS),
+            Duration(1, ChronoUnit.DAYS), // TODO: duration in application.properties
             emptyList()
         )
         return userService.updateRefreshToken(username, refreshToken)

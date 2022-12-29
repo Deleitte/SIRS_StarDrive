@@ -38,7 +38,7 @@ class AuthController(
         val token = tokenService.generateAccessToken(authentication)
         val refreshTokenCookie = Cookie("refresh-token", tokenService.generateRefreshToken(authentication)).apply {
             maxAge = cookieMaxAge
-            secure = true
+            //secure = true TODO: secure = true if production
             isHttpOnly = true
             path = "/"
         }
