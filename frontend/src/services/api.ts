@@ -31,6 +31,33 @@ http.interceptors.request.use(
   }
 );
 
+http.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    const originalConfig = error.config;
+
+    if (originalConfig.url !== "/auth/signin" && error.response) {
+      // Access Token was expired
+      if (error.response.status === 401 && !originalConfig._retry) {
+        originalConfig._retry = true;
+
+        try {
+          const res = await http.post("/token/refresh");
+          const data = new LoginResponseDto(res.data);
+          const { setToken } = useAuthStore();
+          setToken(data.token);
+
+          return http(originalConfig);
+        } catch (_error) {
+          return Promise.reject(_error);
+        }
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
 export async function login(loginRequest: LoginRequestDto) {
   try {
     const res = await http.post("/token", loginRequest);

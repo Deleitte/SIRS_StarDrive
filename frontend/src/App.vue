@@ -27,19 +27,10 @@ const toggleTheme = () => {
 
 onMounted(() => {
   theme.value = localStorage.getItem("theme") ?? "dark";
-  const authToken = Cookies.get("authToken");
-  if (authToken)
-    authStore.setToken(authToken);
-});
-
-authStore.$subscribe((_, state) => {
-  if (state.token)
-    Cookies.set("authToken", state.token, { expires: authStore.expiresAt });
-  else
-    Cookies.remove("authToken");
 });
 
 const logout = async () => {
+  // TODO: We need to revoke the refresh token
   authStore.setToken("");
   await router.push({ name: "login" });
 };
