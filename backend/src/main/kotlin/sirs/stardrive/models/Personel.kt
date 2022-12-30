@@ -47,6 +47,10 @@ data class EmployeeDto(val name: String, val username: String, val absentWorking
     constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves)
 }
 
+data class EmployeePrivateDataDto(val absentWorkingDays: Int, val parentalLeaves: Int) {
+    constructor(employee: Employee) : this(employee.absentWorkingDays, employee.parentalLeaves)
+}
+
 @Repository
 interface EmployeeRepository : MongoRepository<Employee, ObjectId> {
     fun findByUser(user: User): Employee?

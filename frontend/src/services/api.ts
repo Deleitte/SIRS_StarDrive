@@ -10,6 +10,7 @@ import { SensorDto } from "@/models/SensorDto";
 import { ActuatorDto } from "@/models/ActuatorDto";
 import { StatsDto } from "@/models/StatsDto";
 import type { ChangePasswordDto } from "@/models/ChangePasswordDto";
+import {PrivateDataDto} from "@/models/PrivateDataDto";
 
 const http = axios.create({
   baseURL: "http://localhost:8080",
@@ -150,6 +151,19 @@ export async function getStats(): Promise<StatsDto> {
   try {
     const res = await http.get("/stats");
     return new StatsDto(res.data);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
+export async function getPrivateData() : Promise<PrivateDataDto> {
+  try {
+    const res = await http.get("/employees/private");
+    return new PrivateDataDto(res.data);
   } catch (error) {
     throw new StarDriveError(
       await errorMessage(error as AxiosError),

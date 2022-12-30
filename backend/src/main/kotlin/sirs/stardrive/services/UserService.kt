@@ -15,6 +15,7 @@ import sirs.stardrive.models.*
 @Service
 class UserService(
     private val userRepository: UserRepository,
+    private val employeeRepository: EmployeeRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
     private val refreshTokenEncoder: BCryptPasswordEncoder
 ) :
@@ -55,6 +56,16 @@ class UserService(
 
         user.password = passwordEncoder.encode(changePasswordDto.newPassword)
         userRepository.save(user)
+    }
+
+    fun getEmployeePrivateInfo(): EmployeePrivateDataDto {
+        val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
+        val user = userRepository.findByUsername(jwt.subject)
+            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
+        val employee = employeeRepository.findByUser(user)
+            ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, jwt.subject)
+
+        return EmployeePrivateDataDto(employee)
     }
 
     @Throws(StarDriveException::class)

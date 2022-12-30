@@ -29,6 +29,18 @@ const menuItems = [
     to: "/",
     showIf: () => authStore.loggedIn,
   },
+  {
+    title: "Personal Data",
+    icon: "mdi-account",
+    to: "/private",
+    showIf: () => authStore.loggedIn,
+  },
+  {
+    title: "Control Panel",
+    icon: "mdi-cog",
+    to: "/controlpanel",
+    showIf: () => authStore.loggedIn,
+  }
 ];
 
 const filteredMenuItems = computed(() =>

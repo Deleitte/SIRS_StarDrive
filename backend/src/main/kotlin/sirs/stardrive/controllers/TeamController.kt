@@ -1,11 +1,13 @@
 package sirs.stardrive.controllers
 
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import sirs.stardrive.models.*
 import sirs.stardrive.services.TeamService
+import sirs.stardrive.services.UserService
 
 @RestController
-class TeamController(private val teamService: TeamService) {
+class TeamController(private val teamService: TeamService, private val userService: UserService) {
     @GetMapping("/teams")
     fun getTeams(): List<TeamDto> = teamService.getTeams()
 
@@ -19,4 +21,8 @@ class TeamController(private val teamService: TeamService) {
     @PatchMapping("/teams/salary/{teamName}")
     fun changeTeamSalary(@PathVariable teamName: String, @RequestBody newSalary: UpdateTeamSalaryDto): TeamDto =
         teamService.changeTeamSalary(teamName, newSalary.salary)
+
+    @GetMapping("/employees/private")
+    @PreAuthorize("isAuthenticated()")
+    fun getPrivateEmployeeInfo(): EmployeePrivateDataDto = userService.getEmployeePrivateInfo();
 }
