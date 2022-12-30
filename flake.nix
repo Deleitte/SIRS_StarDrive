@@ -16,6 +16,7 @@
             jdk17
             nodejs
             mongosh
+            openssl
             (pkgs.python3.withPackages (p: with p; [ requests ]))
           ];
         };

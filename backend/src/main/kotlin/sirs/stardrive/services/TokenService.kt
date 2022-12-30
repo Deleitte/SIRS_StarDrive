@@ -73,13 +73,18 @@ class TokenService(
         userService.revokeRefreshToken(authentication.name)
     }
 
-    fun generate2FaToken(authentication: Authentication) = generateToken(
-        authentication,
-        accessTokenEncoder,
-        Duration(5, ChronoUnit.MINUTES),
-        listOf(
-            Claim("scope", authentication.authorities.joinToString(" ") as Any),
-            Claim("2FA", true as Any)
-        )
-    )
+    @Throws(StarDriveException::class)
+    fun generate2FaToken(authentication: Authentication, guess: Int): String {
+        if (userService.validateTotp(authentication.name, guess))
+            return generateToken(
+                authentication,
+                accessTokenEncoder,
+                Duration(5, ChronoUnit.MINUTES),
+                listOf(
+                    Claim("scope", authentication.authorities.joinToString(" ") as Any),
+                    Claim("2FA", true as Any)
+                )
+            )
+        throw StarDriveException(ErrorMessage.OTP_ALREADY_EXISTS)
+    }
 }
