@@ -21,7 +21,7 @@ class UserService(
     UserDetailsService {
     init {
         // TODO: do this only in dev mode
-        if (userRepository.findByUsername("admin") == null)
+        if (userRepository.findByUsername("admin") == null) {
             userRepository.save(
                 User(
                     "Vasco Correia",
@@ -32,16 +32,17 @@ class UserService(
                     null
                 )
             )
-        userRepository.save(
-            User(
-                "Vasco Correia",
-                "engineer",
-                passwordEncoder.encode("engineer"),
-                Role.ENGINEER,
-                totpEncryptor.encrypt("JLXJKTYVWWE3TPRQQNM6SU2RHE======"),
-                null
+            userRepository.save(
+                User(
+                    "Vasco Correia",
+                    "engineer",
+                    passwordEncoder.encode("engineer"),
+                    Role.ENGINEER,
+                    totpEncryptor.encrypt("JLXJKTYVWWE3TPRQQNM6SU2RHE======"),
+                    null
+                )
             )
-        )
+        }
     }
 
     @Throws(StarDriveException::class)
@@ -87,18 +88,26 @@ class UserService(
     @Throws(StarDriveException::class)
     fun updateRefreshToken(username: String, refreshToken: String): String {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
-        user.refreshToken = refreshTokenEncoder.encode(refreshToken)
+        // user.refreshToken = refreshTokenEncoder.encode(refreshToken)
+        user.refreshToken = refreshToken
         userRepository.save(user)
+        println("${user.refreshToken}")
+        println("${refreshToken}")
         return refreshToken
     }
 
     @Throws(StarDriveException::class)
     fun validateRefreshToken(username: String, refreshToken: String): Boolean {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
-        return refreshTokenEncoder.matches(
-            refreshToken,
-            user.refreshToken ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
-        )
+        // TODO this was matching with wrong tokens?
+        // val match = refreshTokenEncoder.matches(
+        //     refreshToken,
+        //     user.refreshToken ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
+        // )
+        println("providedToken = $refreshToken")
+        // println("providedToken == storedToken => $match")
+        // return match
+        return user.refreshToken == refreshToken
     }
 
     @Throws(StarDriveException::class)
