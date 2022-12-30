@@ -56,9 +56,14 @@ class AuthController(
 
     @PostMapping("/token/revoke")
     @PreAuthorize("isAuthenticated()")
-    fun revokeToken() {
+    fun revokeToken(response: HttpServletResponse) {
         val authentication = SecurityContextHolder.getContext().authentication!!
         tokenService.revokeRefreshToken(authentication)
+
+        val deleteRefreshTokenCookie = Cookie("refresh-token", null).apply {
+            maxAge = 0
+        }
+        response.addCookie(deleteRefreshTokenCookie)
     }
 
     @PostMapping("/register")

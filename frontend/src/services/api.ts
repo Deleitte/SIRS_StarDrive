@@ -96,6 +96,12 @@ export async function refreshToken() {
   setToken(data.token);
 }
 
+export async function logout() {
+  await http.post("/token/revoke");
+  const { setToken } = useAuthStore();
+  setToken("");
+}
+
 export async function changePassword(changePasswordDto: ChangePasswordDto) {
   try {
     await http.post("/changepassword", changePasswordDto);

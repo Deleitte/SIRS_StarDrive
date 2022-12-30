@@ -4,7 +4,7 @@ import { ref, computed, onMounted } from "vue";
 
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import { refreshToken } from "@/services/api";
+import { logout, refreshToken } from "@/services/api";
 
 const drawer = ref(false);
 
@@ -40,7 +40,7 @@ const menuItems = [
     icon: "mdi-cog",
     to: "/controlpanel",
     showIf: () => authStore.loggedIn,
-  }
+  },
 ];
 
 const filteredMenuItems = computed(() =>
@@ -68,9 +68,8 @@ onMounted(async () => {
   }
 });
 
-const logout = async () => {
-  // TODO: We need to revoke the refresh token
-  authStore.setToken("");
+const onLogout = async () => {
+  await logout();
   await router.push({ name: "login" });
 };
 </script>
@@ -105,7 +104,7 @@ const logout = async () => {
         <v-btn
           v-if="authStore.loggedIn"
           prepend-icon="mdi-logout"
-          @click="logout"
+          @click="onLogout"
           >Logout</v-btn
         >
       </template>
