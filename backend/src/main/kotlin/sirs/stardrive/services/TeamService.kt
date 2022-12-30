@@ -1,5 +1,7 @@
 package sirs.stardrive.services
 
+import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Service
 import sirs.stardrive.config.ErrorMessage
 import sirs.stardrive.config.StarDriveException
@@ -45,5 +47,15 @@ class TeamService(
             ?: throw StarDriveException(ErrorMessage.TEAM_NOT_FOUND)
         team.salary = newSalary
         return TeamDto(teamRepository.save(team), employeeRepository.findByTeam(team))
+    }
+
+    fun getEmployeePrivateInfo(): EmployeePrivateDataDto {
+        val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
+        val user = userRepository.findByUsername(jwt.subject)
+            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
+        val employee = employeeRepository.findByUser(user)
+            ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, jwt.subject)
+
+        return EmployeePrivateDataDto(employee)
     }
 }

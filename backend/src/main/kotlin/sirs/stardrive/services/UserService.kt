@@ -14,12 +14,9 @@ import javax.crypto.spec.SecretKeySpec
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val employeeRepository: EmployeeRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
-    private val refreshTokenEncoder: BCryptPasswordEncoder,
     private val totpEncryptor: TotpEncryptor
-) :
-    UserDetailsService {
+) : UserDetailsService {
     init {
         // TODO: do this only in dev mode
         if (userRepository.findByUsername("admin") == null) {
@@ -61,8 +58,10 @@ class UserService(
         userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
 
     fun createUser(newUserDto: NewUserDto) {
-        if (userRepository.findByUsername(newUserDto.username) != null)
-            throw StarDriveException(ErrorMessage.USER_ALREADY_EXISTS, newUserDto.username)
+        if (userRepository.findByUsername(newUserDto.username) != null) throw StarDriveException(
+            ErrorMessage.USER_ALREADY_EXISTS,
+            newUserDto.username
+        )
 
         val encodedPassword = passwordEncoder.encode(newUserDto.password)
         val encodedTotpKey: String = BaseEncoding.base32().encode(generateOtpKey().encoded)
@@ -73,30 +72,17 @@ class UserService(
 
     fun changePassword(changePasswordDto: ChangePasswordDto) {
         val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
-        val user = userRepository.findByUsername(jwt.subject)
-            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
+        val user = userRepository.findByUsername(jwt.subject) ?: throw StarDriveException(
+            ErrorMessage.USER_NOT_FOUND,
+            jwt.subject
+        )
 
-        if (!passwordEncoder.matches(changePasswordDto.oldPassword, user.password))
-            throw StarDriveException(ErrorMessage.ACCESS_DENIED)
+        if (!passwordEncoder.matches(changePasswordDto.oldPassword, user.password)) throw StarDriveException(
+            ErrorMessage.ACCESS_DENIED
+        )
 
         user.password = passwordEncoder.encode(changePasswordDto.newPassword)
         userRepository.save(user)
-    }
-
-    fun getEmployeePrivateInfo(): EmployeePrivateDataDto {
-        val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
-        val user = userRepository.findByUsername(jwt.subject)
-            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
-        val employee = employeeRepository.findByUser(user)
-            ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, jwt.subject)
-
-        return EmployeePrivateDataDto(employee)
-    }
-
-    @Throws(StarDriveException::class)
-    fun hasRefreshToken(username: String): Boolean {
-        val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
-        return user.refreshToken != null
     }
 
     @Throws(StarDriveException::class)
@@ -143,12 +129,9 @@ class UserService(
         val counter = computeEpoch()
         for (i in -1..1) {
             if (guess == computeHotp(
-                    SecretKeySpec(BaseEncoding.base32().decode(secret), "AES"),
-                    counter + i,
-                    6
+                    SecretKeySpec(BaseEncoding.base32().decode(secret), "AES"), counter + i, 6
                 )
-            )
-                return true
+            ) return true
         }
         return false
     }
