@@ -13,10 +13,7 @@ import org.springframework.web.bind.annotation.CookieValue
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
-import sirs.stardrive.models.ChangePasswordDto
-import sirs.stardrive.models.LoginRequestDto
-import sirs.stardrive.models.LoginResponseDto
-import sirs.stardrive.models.NewUserDto
+import sirs.stardrive.models.*
 import sirs.stardrive.services.TokenService
 import sirs.stardrive.services.UserService
 
@@ -52,6 +49,7 @@ class AuthController(
         request: HttpServletRequest,
         @CookieValue(name = "refresh-token") refreshToken: String
     ): LoginResponseDto {
+        // TODO isto está partido quando se faz refresh e a revogar os tokens antigos
         val authentication = refreshTokenAuthProvider.authenticate(BearerTokenAuthenticationToken(refreshToken))
         return LoginResponseDto(tokenService.renewAccessToken(authentication, refreshToken))
     }
@@ -69,6 +67,21 @@ class AuthController(
         val authenticationToken = UsernamePasswordAuthenticationToken(newUserDto.username, newUserDto.password)
         val authentication = authenticationManager.authenticate(authenticationToken)
         val token = tokenService.generateAccessToken(authentication)
+        return LoginResponseDto(token)
+    }
+
+    @PostMapping("/token/2fa")
+    @PreAuthorize("isAuthenticated()")
+    fun totp(response: HttpServletResponse, @RequestBody totpDto: TotpDto): LoginResponseDto {
+        val authentication = SecurityContextHolder.getContext().authentication!!
+        val token = tokenService.generate2FaToken(authentication, totpDto.guess)
+        val refreshTokenCookie = Cookie("refresh-token", tokenService.generateRefreshToken(authentication)).apply {
+            maxAge = cookieMaxAge
+            //secure = true TODO: secure = true if production
+            isHttpOnly = true
+            path = "/"
+        }
+        response.addCookie(refreshTokenCookie)
         return LoginResponseDto(token)
     }
 

@@ -39,6 +39,8 @@ data class NewUserDto(val name: String, val username: String, var password: Stri
 
 data class ChangePasswordDto(val oldPassword: String, val newPassword: String)
 
+data class TotpDto(val guess: Int)
+
 @Repository
 interface UserRepository : MongoRepository<User, ObjectId> {
     fun findByUsername(username: String): User?

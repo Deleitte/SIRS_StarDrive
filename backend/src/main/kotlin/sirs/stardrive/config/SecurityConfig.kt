@@ -1,10 +1,13 @@
 package sirs.stardrive.config
 
+import com.google.common.io.BaseEncoding
+import com.google.common.primitives.Longs
 import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jose.jwk.source.JWKSource
 import com.nimbusds.jose.proc.SecurityContext
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
@@ -30,14 +33,40 @@ import java.security.KeyPairGenerator
 import java.security.SecureRandom
 import java.security.interfaces.RSAPrivateKey
 import java.security.interfaces.RSAPublicKey
+import java.time.Instant
 import java.util.*
+import javax.crypto.Cipher
+import javax.crypto.Mac
+import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.experimental.and
+import kotlin.math.pow
+
+class TotpEncryptor {
+    @Value("\${totp.encryption.key}")
+    private lateinit var totpEncryptionKey: String
+
+    @Value("\${totp.encryption.iv}")
+    private lateinit var totpInitializationVector: String
+
+    private fun common(mode: Int, input: String): String {
+        val key = SecretKeySpec(BaseEncoding.base32().decode(totpEncryptionKey), "AES")
+        val ivParameterSpec = IvParameterSpec(BaseEncoding.base32().decode(totpInitializationVector))
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+        cipher.init(mode, key, ivParameterSpec)
+        return BaseEncoding.base32().encode(cipher.doFinal(BaseEncoding.base32().decode(input)))
+    }
+
+    fun encrypt(secret: String) = common(Cipher.ENCRYPT_MODE, secret)
+
+    fun decrypt(encryptedSecret: String) = common(Cipher.DECRYPT_MODE, encryptedSecret)
+}
 
 fun generateRSA(): RSAKey {
     val keyPairGenerator = KeyPairGenerator.getInstance("RSA").apply {
         initialize(2048)
     }
-    
+
     val keyPair = keyPairGenerator.generateKeyPair()
     val publicKey = keyPair.public as RSAPublicKey
     val privateKey = keyPair.private as RSAPrivateKey
@@ -53,6 +82,24 @@ fun generateOtpKey(): SecretKeySpec {
     SecureRandom().nextBytes(seed)
     return SecretKeySpec(seed, "AES")
 }
+
+fun computeEpoch() = (Instant.now().epochSecond - 0) / 30 // 30 second epoch
+fun computeHotp(key: SecretKeySpec, counter: Long, length: Int): Int {
+    val mac = Mac.getInstance("HmacSHA1")
+    mac.init(key)
+    val hmac = mac.doFinal(Longs.toByteArray(counter))
+    val offset = hmac[hmac.size - 1] and 0xF
+    var trunc = 0;
+    for (i in 0..3) {
+        (trunc shl 8).also { trunc = it }
+        trunc = trunc or (hmac[offset + i].toInt() and 0xff)
+    }
+    // 2 ** 31 - 1 (31 bits = 1)
+    trunc = trunc and 0x7FFFFFFF
+    trunc = trunc.mod(10.0.pow(length.toDouble()).toInt())
+    return trunc
+}
+
 
 @Configuration
 @EnableWebSecurity
@@ -75,8 +122,8 @@ class SecurityConfig {
     }
 
     @Bean
-    fun refreshTokenAuthenticationProvider(@Qualifier("refreshTokenDecoder") refreshTokenDecoder: JwtDecoder)
-        = JwtAuthenticationProvider(refreshTokenDecoder)
+    fun refreshTokenAuthenticationProvider(@Qualifier("refreshTokenDecoder") refreshTokenDecoder: JwtDecoder) =
+        JwtAuthenticationProvider(refreshTokenDecoder)
 
     @Bean
     @Throws(Exception::class)
@@ -133,7 +180,7 @@ class SecurityConfig {
     fun refreshTokenEncoder() = BCryptPasswordEncoder()
 
     @Bean
-    fun totpSecretEncoder() = BCryptPasswordEncoder()
+    fun totpEncrytor() = TotpEncryptor()
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource =

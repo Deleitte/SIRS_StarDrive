@@ -35,19 +35,23 @@ class TokenService(
             .expiresAt(now.plus(duration.amount, duration.unit))
             .subject(authentication.name)
         tokenClaims.forEach { claims.claim(it.claimName, it.claimValue) }
-
         return encoder.encode(JwtEncoderParameters.from(claims.build())).tokenValue
     }
 
-    fun generateAccessToken(authentication: Authentication) = generateToken(
-        authentication,
-        accessTokenEncoder,
-        Duration(5, ChronoUnit.MINUTES), // TODO: duration in application.properties
-        listOf(
-            Claim("scope", authentication.authorities.joinToString(" ") as Any),
-            Claim("2FA", false as Any)
+    fun generateAccessToken(authentication: Authentication): String {
+        // ugly fix for missing claims when authenticating with refresh token
+        val user = userService.loadUserByUsername(authentication.name)
+        val authorities = user.authorities
+        return generateToken(
+            authentication,
+            accessTokenEncoder,
+            Duration(5, ChronoUnit.MINUTES), // TODO: duration in application.properties
+            listOf(
+                Claim("scope", authorities.joinToString(" ") as Any),
+                Claim("2FA", false as Any)
+            )
         )
-    )
+    }
 
     @Throws(StarDriveException::class)
     fun renewAccessToken(authentication: Authentication, refreshToken: String): String {
@@ -73,13 +77,19 @@ class TokenService(
         userService.revokeRefreshToken(authentication.name)
     }
 
-    fun generate2FaToken(authentication: Authentication) = generateToken(
-        authentication,
-        accessTokenEncoder,
-        Duration(5, ChronoUnit.MINUTES),
-        listOf(
-            Claim("scope", authentication.authorities.joinToString(" ") as Any),
-            Claim("2FA", true as Any)
-        )
-    )
+    @Throws(StarDriveException::class)
+    fun generate2FaToken(authentication: Authentication, guess: Int): String {
+        val user = userService.loadUserByUsername(authentication.name)
+        if (userService.validateTotp(authentication.name, guess))
+            return generateToken(
+                authentication,
+                accessTokenEncoder,
+                Duration(5, ChronoUnit.MINUTES),
+                listOf(
+                    Claim("scope", user.authorities.joinToString(" ") as Any),
+                    Claim("2FA", true as Any)
+                )
+            )
+        throw StarDriveException(ErrorMessage.OTP_ALREADY_EXISTS)
+    }
 }
