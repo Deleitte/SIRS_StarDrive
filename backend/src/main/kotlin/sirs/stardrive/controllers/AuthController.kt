@@ -51,7 +51,7 @@ class AuthController(
     ): LoginResponseDto {
         // TODO isto está partido quando se faz refresh e a revogar os tokens antigos
         val authentication = refreshTokenAuthProvider.authenticate(BearerTokenAuthenticationToken(refreshToken))
-        return LoginResponseDto(tokenService.renewAccessToken(authentication, refreshToken))
+        return LoginResponseDto(tokenService.renewAccessToken(authentication))
     }
 
     @PostMapping("/token/revoke")

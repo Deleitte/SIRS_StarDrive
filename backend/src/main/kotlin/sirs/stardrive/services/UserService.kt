@@ -93,28 +93,26 @@ class UserService(
     }
 
     @Throws(StarDriveException::class)
-    fun updateRefreshToken(username: String, refreshToken: String): String {
+    fun updateRefreshToken(username: String, refreshToken: Jwt) {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
         // user.refreshToken = refreshTokenEncoder.encode(refreshToken)
-        user.refreshToken = refreshToken
+        user.refreshToken = RefreshToken(refreshToken.id, refreshToken.expiresAt!!.epochSecond)
         userRepository.save(user)
-        println("${user.refreshToken}")
-        println("${refreshToken}")
-        return refreshToken
     }
 
     @Throws(StarDriveException::class)
-    fun validateRefreshToken(username: String, refreshToken: String): Boolean {
+    fun validateRefreshToken(username: String, refreshToken: Jwt): Boolean {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
         // TODO this was matching with wrong tokens?
         // val match = refreshTokenEncoder.matches(
         //     refreshToken,
         //     user.refreshToken ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
         // )
-        println("providedToken = $refreshToken")
         // println("providedToken == storedToken => $match")
         // return match
-        return user.refreshToken == refreshToken
+        val providedToken = RefreshToken(refreshToken.id, refreshToken.expiresAt!!.epochSecond)
+        println("$providedToken == ${user.refreshToken}")
+        return user.refreshToken?.equals(providedToken) ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
     }
 
     @Throws(StarDriveException::class)

@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository
+import java.time.Instant
 
 @Document
 data class User(
@@ -17,7 +18,7 @@ data class User(
     @get:JvmName("pass") var password: String,
     var role: Role,
     val totpKey: String,
-    var refreshToken: String?,
+    var refreshToken: RefreshToken?,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
     constructor(newUserDto: NewUserDto) : this(
@@ -34,6 +35,8 @@ data class User(
     override fun isCredentialsNonExpired(): Boolean = true
     override fun isEnabled(): Boolean = true
 }
+
+data class RefreshToken(val jti: String, val exp: Long)
 
 data class NewUserDto(val name: String, val username: String, var password: String, val otpKey: String)
 
