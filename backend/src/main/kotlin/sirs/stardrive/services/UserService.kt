@@ -43,6 +43,16 @@ class UserService(
                     null
                 )
             )
+            userRepository.save(
+                User(
+                    "Vasco Correia",
+                    "employee",
+                    passwordEncoder.encode("employee"),
+                    Role.EMPLOYEE,
+                    totpEncryptor.encrypt("JLXJKTYVWWE3TPRQQNM6SU2RHE======"),
+                    null
+                )
+            )
         }
     }
 
