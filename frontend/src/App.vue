@@ -4,7 +4,7 @@ import { ref, computed, onMounted } from "vue";
 
 import { useAuthStore } from "@/stores/auth";
 import router from "@/router";
-import { refreshToken } from "@/services/api";
+import { logout, refreshToken } from "@/services/api";
 
 const drawer = ref(false);
 
@@ -12,22 +12,10 @@ const authStore = useAuthStore();
 
 const menuItems = [
   {
-    title: "Login",
-    icon: "mdi-login",
-    to: "/login",
-    showIf: () => !authStore.loggedIn,
-  },
-  {
-    title: "Register",
-    icon: "mdi-account-plus",
-    to: "/register",
-    showIf: () => !authStore.loggedIn,
-  },
-  {
     title: "Home",
     icon: "mdi-home",
     to: "/",
-    showIf: () => authStore.loggedIn,
+    showIf: () => true || authStore.loggedIn,
   },
   {
     title: "Personal Data",
@@ -40,7 +28,7 @@ const menuItems = [
     icon: "mdi-cog",
     to: "/controlpanel",
     showIf: () => authStore.loggedIn,
-  }
+  },
 ];
 
 const filteredMenuItems = computed(() =>
@@ -68,9 +56,8 @@ onMounted(async () => {
   }
 });
 
-const logout = async () => {
-  // TODO: We need to revoke the refresh token
-  authStore.setToken("");
+const onLogout = async () => {
+  await logout();
   await router.push({ name: "login" });
 };
 </script>
@@ -91,7 +78,7 @@ const logout = async () => {
       </v-list>
     </v-navigation-drawer>
 
-    <v-app-bar>
+    <v-app-bar density="compact">
       <template #prepend>
         <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
       </template>
@@ -102,12 +89,39 @@ const logout = async () => {
         <v-btn :prepend-icon="themeIcon" @click="toggleTheme"
           >Toggle theme</v-btn
         >
-        <v-btn
-          v-if="authStore.loggedIn"
-          prepend-icon="mdi-logout"
-          @click="logout"
-          >Logout</v-btn
-        >
+
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn prepend-icon v-bind="props">
+              <v-avatar icon="mdi-account" size="32" />
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item
+              v-if="authStore.token"
+              prepend-icon="mdi-logout"
+              title="Logout"
+              @click="onLogout"
+            ></v-list-item>
+
+            <v-list-item
+              v-if="!authStore.token"
+              prepend-icon="mdi-login"
+              :to="{ name: 'login' }"
+              title="Login"
+              @click="drawer = false"
+            ></v-list-item>
+
+            <v-list-item
+              v-if="!authStore.token"
+              prepend-icon="mdi-account-plus"
+              :to="{ name: 'register' }"
+              title="Register"
+              @click="drawer = false"
+            ></v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </v-app-bar>
 

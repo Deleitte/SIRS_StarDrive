@@ -2,6 +2,7 @@ package sirs.stardrive.services
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.security.core.Authentication
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.security.oauth2.jwt.JwtClaimsSet
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters
@@ -10,6 +11,7 @@ import sirs.stardrive.config.ErrorMessage
 import sirs.stardrive.config.StarDriveException
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.UUID
 
 @Service
 class TokenService(
@@ -27,19 +29,19 @@ class TokenService(
         encoder: JwtEncoder,
         duration: Duration,
         tokenClaims: List<Claim>
-    ): String {
+    ): Jwt {
         val now: Instant = Instant.now()
         val claims = JwtClaimsSet.builder()
+            .id(UUID.randomUUID().toString())
             .issuer("self")
             .issuedAt(now)
             .expiresAt(now.plus(duration.amount, duration.unit))
             .subject(authentication.name)
         tokenClaims.forEach { claims.claim(it.claimName, it.claimValue) }
-        return encoder.encode(JwtEncoderParameters.from(claims.build())).tokenValue
+        return encoder.encode(JwtEncoderParameters.from(claims.build()))
     }
 
     fun generateAccessToken(authentication: Authentication): String {
-        // ugly fix for missing claims when authenticating with refresh token
         val user = userService.loadUserByUsername(authentication.name)
         val authorities = user.authorities
         return generateToken(
@@ -50,12 +52,13 @@ class TokenService(
                 Claim("scope", authorities.joinToString(" ") as Any),
                 Claim("2FA", false as Any)
             )
-        )
+        ).tokenValue
     }
 
     @Throws(StarDriveException::class)
-    fun renewAccessToken(authentication: Authentication, refreshToken: String): String {
+    fun renewAccessToken(authentication: Authentication): String {
         val username = authentication.name
+        val refreshToken = authentication.principal as Jwt
         if (!userService.validateRefreshToken(username, refreshToken))
             throw StarDriveException(ErrorMessage.INVALID_REFRESH_TOKEN)
         return generateAccessToken(authentication)
@@ -70,7 +73,9 @@ class TokenService(
             Duration(1, ChronoUnit.DAYS), // TODO: duration in application.properties
             emptyList()
         )
-        return userService.updateRefreshToken(username, refreshToken)
+
+        userService.updateRefreshToken(username, refreshToken)
+        return refreshToken.tokenValue
     }
 
     fun revokeRefreshToken(authentication: Authentication) {
@@ -89,7 +94,7 @@ class TokenService(
                     Claim("scope", user.authorities.joinToString(" ") as Any),
                     Claim("2FA", true as Any)
                 )
-            )
+            ).tokenValue
         throw StarDriveException(ErrorMessage.OTP_ALREADY_EXISTS)
     }
 }

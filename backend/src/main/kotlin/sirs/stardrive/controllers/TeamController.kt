@@ -4,10 +4,9 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 import sirs.stardrive.models.*
 import sirs.stardrive.services.TeamService
-import sirs.stardrive.services.UserService
 
 @RestController
-class TeamController(private val teamService: TeamService, private val userService: UserService) {
+class TeamController(private val teamService: TeamService) {
     @GetMapping("/teams")
     fun getTeams(): List<TeamDto> = teamService.getTeams()
 
@@ -24,5 +23,5 @@ class TeamController(private val teamService: TeamService, private val userServi
 
     @GetMapping("/employees/private")
     @PreAuthorize("isAuthenticated()")
-    fun getPrivateEmployeeInfo(): EmployeePrivateDataDto = userService.getEmployeePrivateInfo();
+    fun getPrivateEmployeeInfo(): EmployeePrivateDataDto = teamService.getEmployeePrivateInfo();
 }

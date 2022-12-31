@@ -51,14 +51,19 @@ class AuthController(
     ): LoginResponseDto {
         // TODO isto está partido quando se faz refresh e a revogar os tokens antigos
         val authentication = refreshTokenAuthProvider.authenticate(BearerTokenAuthenticationToken(refreshToken))
-        return LoginResponseDto(tokenService.renewAccessToken(authentication, refreshToken))
+        return LoginResponseDto(tokenService.renewAccessToken(authentication))
     }
 
     @PostMapping("/token/revoke")
     @PreAuthorize("isAuthenticated()")
-    fun revokeToken() {
+    fun revokeToken(response: HttpServletResponse) {
         val authentication = SecurityContextHolder.getContext().authentication!!
         tokenService.revokeRefreshToken(authentication)
+
+        val deleteRefreshTokenCookie = Cookie("refresh-token", null).apply {
+            maxAge = 0
+        }
+        response.addCookie(deleteRefreshTokenCookie)
     }
 
     @PostMapping("/register")

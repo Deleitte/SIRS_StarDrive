@@ -14,12 +14,9 @@ import javax.crypto.spec.SecretKeySpec
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val employeeRepository: EmployeeRepository,
     private val passwordEncoder: BCryptPasswordEncoder,
-    private val refreshTokenEncoder: BCryptPasswordEncoder,
     private val totpEncryptor: TotpEncryptor
-) :
-    UserDetailsService {
+) : UserDetailsService {
     init {
         // TODO: do this only in dev mode
         if (userRepository.findByUsername("admin") == null) {
@@ -43,6 +40,16 @@ class UserService(
                     null
                 )
             )
+            userRepository.save(
+                User(
+                    "Vasco Correia",
+                    "employee",
+                    passwordEncoder.encode("employee"),
+                    Role.EMPLOYEE,
+                    totpEncryptor.encrypt("JLXJKTYVWWE3TPRQQNM6SU2RHE======"),
+                    null
+                )
+            )
         }
     }
 
@@ -51,8 +58,10 @@ class UserService(
         userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, username)
 
     fun createUser(newUserDto: NewUserDto) {
-        if (userRepository.findByUsername(newUserDto.username) != null)
-            throw StarDriveException(ErrorMessage.USER_ALREADY_EXISTS, newUserDto.username)
+        if (userRepository.findByUsername(newUserDto.username) != null) throw StarDriveException(
+            ErrorMessage.USER_ALREADY_EXISTS,
+            newUserDto.username
+        )
 
         val encodedPassword = passwordEncoder.encode(newUserDto.password)
         val encodedTotpKey: String = BaseEncoding.base32().encode(generateOtpKey().encoded)
@@ -63,30 +72,17 @@ class UserService(
 
     fun changePassword(changePasswordDto: ChangePasswordDto) {
         val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
-        val user = userRepository.findByUsername(jwt.subject)
-            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
+        val user = userRepository.findByUsername(jwt.subject) ?: throw StarDriveException(
+            ErrorMessage.USER_NOT_FOUND,
+            jwt.subject
+        )
 
-        if (!passwordEncoder.matches(changePasswordDto.oldPassword, user.password))
-            throw StarDriveException(ErrorMessage.ACCESS_DENIED)
+        if (!passwordEncoder.matches(changePasswordDto.oldPassword, user.password)) throw StarDriveException(
+            ErrorMessage.ACCESS_DENIED
+        )
 
         user.password = passwordEncoder.encode(changePasswordDto.newPassword)
         userRepository.save(user)
-    }
-
-    fun getEmployeePrivateInfo(): EmployeePrivateDataDto {
-        val jwt = SecurityContextHolder.getContext().authentication.principal as Jwt;
-        val user = userRepository.findByUsername(jwt.subject)
-            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, jwt.subject)
-        val employee = employeeRepository.findByUser(user)
-            ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, jwt.subject)
-
-        return EmployeePrivateDataDto(employee)
-    }
-
-    @Throws(StarDriveException::class)
-    fun hasRefreshToken(username: String): Boolean {
-        val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
-        return user.refreshToken != null
     }
 
     @Throws(StarDriveException::class)
@@ -97,28 +93,26 @@ class UserService(
     }
 
     @Throws(StarDriveException::class)
-    fun updateRefreshToken(username: String, refreshToken: String): String {
+    fun updateRefreshToken(username: String, refreshToken: Jwt) {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
         // user.refreshToken = refreshTokenEncoder.encode(refreshToken)
-        user.refreshToken = refreshToken
+        user.refreshToken = RefreshToken(refreshToken.id, refreshToken.expiresAt!!.epochSecond)
         userRepository.save(user)
-        println("${user.refreshToken}")
-        println("${refreshToken}")
-        return refreshToken
     }
 
     @Throws(StarDriveException::class)
-    fun validateRefreshToken(username: String, refreshToken: String): Boolean {
+    fun validateRefreshToken(username: String, refreshToken: Jwt): Boolean {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
         // TODO this was matching with wrong tokens?
         // val match = refreshTokenEncoder.matches(
         //     refreshToken,
         //     user.refreshToken ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
         // )
-        println("providedToken = $refreshToken")
         // println("providedToken == storedToken => $match")
         // return match
-        return user.refreshToken == refreshToken
+        val providedToken = RefreshToken(refreshToken.id, refreshToken.expiresAt!!.epochSecond)
+        println("$providedToken == ${user.refreshToken}")
+        return user.refreshToken?.equals(providedToken) ?: throw StarDriveException(ErrorMessage.USER_NOT_LOGGED_IN)
     }
 
     @Throws(StarDriveException::class)
@@ -133,12 +127,9 @@ class UserService(
         val counter = computeEpoch()
         for (i in -1..1) {
             if (guess == computeHotp(
-                    SecretKeySpec(BaseEncoding.base32().decode(secret), "AES"),
-                    counter + i,
-                    6
+                    SecretKeySpec(BaseEncoding.base32().decode(secret), "AES"), counter + i, 6
                 )
-            )
-                return true
+            ) return true
         }
         return false
     }
