@@ -30,4 +30,7 @@ class ActuatorController(val actuatorService: ActuatorService) {
     @PatchMapping("/actuators/{actuatorName}/off")
     fun turnOffActuator(@PathVariable actuatorName: String) = actuatorService.turnOffActuator(actuatorName)
 
+    @GetMapping("/actuators/{actuatorName}/challenge")
+    fun getChallenge(@PathVariable actuatorName: String) = actuatorService.getChallenge(actuatorName)
+
 }

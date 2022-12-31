@@ -5,14 +5,15 @@ import sys
 
 
 class Sensor(timeUpdatedMachine.TimeUpdatedMachine):
-    def __init__(self, name, ping_interval):
-        super().__init__(name, ping_interval)
+    def __init__(self, name, key_folder, ping_interval):
+        self.ping_interval = ping_interval
+        super().__init__(name)
 
     def update(self):
         value = random.randint(50, 100)
         print("Updating sensor {} with value {}".format(self.name, value))
         req = requests.patch(
-            'http://localhost:8080/sensors/{}/update'.format(self.name), json={'value': value}
+            f'http://localhost:8080/sensors/{self.name}/update', json={'value': value}
         )
         print(req.status_code)
-Sensor(sys.argv[1], int(sys.argv[2]))
+Sensor(sys.argv[1], sys.argv[2], int(sys.argv[3]))

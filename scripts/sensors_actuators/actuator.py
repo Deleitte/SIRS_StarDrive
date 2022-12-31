@@ -3,27 +3,34 @@ import requests
 import timeUpdatedMachine
 import sys
 import json
+import rsa
+import base64
 
 class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
-    def __init__(self, name):
+    def __init__(self, name, key_folder):   
         self.on = True
         self.damaged = False
-        req = requests.patch(
-            'http://localhost:8080/actuators/{}'.format(name),
-            json={'damaged': self.damaged}
-        )
-        super().__init__(name, json.loads(req.text)['pingInterval'])
+        super().__init__(name, key_folder)
         
     def update(self):
         print("Requesting configs for {}".format(self.name))
+        self.getChallenge(self.name)
         req = requests.patch(
-            'http://localhost:8080/actuators/{}'.format(self.name),
-            json={'damaged': True if self.damaged else random.randint(1, 100) > 95 }
+            f'http://localhost:8080/actuators/{self.name}',
+            json={
+                'damaged': True if self.damaged else random.randint(1, 100) > 95,
+                'challenge': self.challenge,
+            }
         )
         response = json.loads(req.text)
         self.on = response['on']
         self.damaged = response['damaged']
         self.ping_interval = response['pingInterval']
         print(response)
+    
+    def getChallenge(self):
+        req = requests.get(f'http://localhost:8080/actuators/{self.name}/challenge')
+        response = json.loads(req.text)
+        self.challenge = int(rsa.decrypt(base64.b64decode(response['challenge']), self.privateKey).decode('ascii')) + 1
 
-Actuator(sys.argv[1])
+Actuator(sys.argv[1], sys.argv[2])
