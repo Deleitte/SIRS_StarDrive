@@ -11,6 +11,7 @@ import { ActuatorDto } from "@/models/ActuatorDto";
 import { StatsDto } from "@/models/StatsDto";
 import type { ChangePasswordDto } from "@/models/ChangePasswordDto";
 import {PrivateDataDto} from "@/models/PrivateDataDto";
+import {EmployeeDto} from "@/models/EmployeeDto";
 
 const http = axios.create({
   baseURL: "http://localhost:8080",
@@ -177,6 +178,19 @@ export async function getPrivateData() : Promise<PrivateDataDto> {
       error.response.data.code
     );
   }
+}
+
+export async function getEmployees() : Promise<EmployeeDto[]> {
+    try {
+        const res = await http.get("/employees");
+        return res.data.map((e: any) => new EmployeeDto(e));
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
 }
 
 async function errorMessage(error: AxiosError) {

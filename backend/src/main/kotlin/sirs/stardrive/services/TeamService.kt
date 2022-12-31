@@ -58,4 +58,14 @@ class TeamService(
 
         return EmployeePrivateDataDto(employee)
     }
+
+    fun addWorkingShift(employeeName: String, workingShiftDto: WorkingShiftDto): EmployeeDto {
+        val user = userRepository.findByUsername(employeeName)
+            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, employeeName)
+        val employee = employeeRepository.findByUser(user)
+            ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, employeeName)
+        val workingShift = WorkingShift(workingShiftDto)
+        employee.workingShifts.add(workingShift)
+        return EmployeeDto(employeeRepository.save(employee))
+    }
 }

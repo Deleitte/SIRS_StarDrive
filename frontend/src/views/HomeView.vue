@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
-import { getStats } from "@/services/api";
+import {getEmployees, getStats} from "@/services/api";
 import { StatsDto } from "@/models/StatsDto";
+import {EmployeeDto} from "@/models/EmployeeDto";
 
 const authStore = useAuthStore();
 const message = computed(() =>
@@ -24,6 +25,8 @@ fetchTeams();
 */
 
 const stats = ref<StatsDto>();
+const employees = ref<EmployeeDto[]>([]);
+
 async function fetchStats() {
   try {
     stats.value = await getStats();
@@ -32,7 +35,16 @@ async function fetchStats() {
   }
 }
 
+async function fetchEmployees() {
+  try {
+    employees.value = await getEmployees();
+  } catch (error) {
+    /* empty */
+  }
+}
+
 fetchStats();
+fetchEmployees();
 </script>
 
 <template>
@@ -40,13 +52,14 @@ fetchStats();
     <h1>{{ message }}</h1>
     <v-divider></v-divider>
   </v>
+  <h1>Production Stats</h1>
   <div>
     <v-row>
       <v-col>
         <v-container>
           <v-row>
             <v-col class="d-flex justify-center align-center"
-              ><h1>Working sensors</h1></v-col
+              ><h2>Working sensors</h2></v-col
             >
           </v-row>
           <v-row>
@@ -60,7 +73,7 @@ fetchStats();
         <v-container>
           <v-row>
             <v-col class="d-flex justify-center align-center"
-              ><h1>Working actuators</h1></v-col
+              ><h2>Working actuators</h2></v-col
             >
           </v-row>
           <v-row>
@@ -76,7 +89,7 @@ fetchStats();
         <v-container>
           <v-row>
             <v-col class="d-flex justify-center align-center"
-              ><h1>Energy consumption</h1></v-col
+              ><h2>Energy consumption</h2></v-col
             >
           </v-row>
           <v-row>
@@ -97,7 +110,7 @@ fetchStats();
         <v-container>
           <v-row>
             <v-col class="d-flex justify-center align-center"
-              ><h1>Cars in production</h1></v-col
+              ><h2>Cars in production</h2></v-col
             >
           </v-row>
           <v-row>
@@ -115,6 +128,25 @@ fetchStats();
         </v-container>
       </v-col>
     </v-row>
+  </div>
+  <div>
+    <h1>Working Shifts</h1>
+    <div v-for="employee in employees" :key="employee.name">
+      <v-row>
+        <v-col>
+          <v-container>
+            <v-row>
+              <v-col>
+                <p>{{ employee.name }}</p>
+                  <div v-for="shift in employee.workingShifts">
+                    <p>{{shift.weekDay}} : {{ shift.startTime }} - {{ shift.endTime }}</p>
+                  </div>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-col>
+      </v-row>
+    </div>
   </div>
   <!--
   <h1>{{ message }}</h1>

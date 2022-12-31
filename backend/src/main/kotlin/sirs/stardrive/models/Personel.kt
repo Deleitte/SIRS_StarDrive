@@ -35,6 +35,7 @@ data class Employee(
     @DocumentReference var team: Team,
     var absentWorkingDays : Int = 0,
     var parentalLeaves : Int = 0,
+    var workingShifts : MutableList<WorkingShift> = mutableListOf(),
     @MongoId val id: ObjectId? = null
 )
 
@@ -43,8 +44,8 @@ data class NewEmployeeDto(
     val team: String
 )
 
-data class EmployeeDto(val name: String, val username: String, val absentWorkingDays: Int, val parentalLeaves: Int) {
-    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves)
+data class EmployeeDto(val name: String, val username: String, val absentWorkingDays: Int, val parentalLeaves: Int, val workingShifts: List<WorkingShift>) {
+    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves, employee.workingShifts)
 }
 
 data class EmployeePrivateDataDto(val absentWorkingDays: Int, val parentalLeaves: Int) {
@@ -56,3 +57,17 @@ interface EmployeeRepository : MongoRepository<Employee, ObjectId> {
     fun findByUser(user: User): Employee?
     fun findByTeam(team: Team): List<Employee>
 }
+
+data class WorkingShift(
+    val weekDay: String,
+    val startTime: String,
+    val endTime: String
+) {
+    constructor(workingShiftDto: WorkingShiftDto) : this(workingShiftDto.weekDay, workingShiftDto.startTime, workingShiftDto.endTime)
+}
+
+data class WorkingShiftDto(
+    val weekDay: String,
+    val startTime: String,
+    val endTime: String
+)
