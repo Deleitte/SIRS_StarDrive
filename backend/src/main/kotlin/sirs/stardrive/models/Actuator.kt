@@ -20,15 +20,13 @@ const val DEFAULT_PING_INTERVAL = 5000
 data class Actuator(
     @Indexed(unique = true) val name: String,
     var pingInterval: Int = DEFAULT_PING_INTERVAL,
-    var rsaPublicKey: String,
-    var modulus: BigInteger,
-    var exponent: BigInteger,
-    var challenge: Int = SecureRandom().nextInt(),
+    var publicKey: String,
+    var timestamp: Int = 0,
     var on : Boolean = false,
     var damaged : Boolean = false,
     @MongoId val id: ObjectId? = null
 ) {
-    constructor(newActuatorDto: NewActuatorDto) : this(newActuatorDto.name, newActuatorDto.pingInterval, newActuatorDto.key, BigInteger(newActuatorDto.modulus,16), BigInteger(newActuatorDto.exponent,16))
+    constructor(newActuatorDto: NewActuatorDto) : this(newActuatorDto.name, newActuatorDto.pingInterval, newActuatorDto.key)
 }
 
 @Repository
@@ -36,16 +34,12 @@ interface ActuatorRepository : MongoRepository<Actuator, ObjectId> {
     fun findByName(name: String): Actuator?
 }
 
-data class NewActuatorDto(val name: String, val pingInterval: Int = DEFAULT_PING_INTERVAL, val key: String, val modulus: String, val exponent: String)
+data class NewActuatorDto(val name: String, val pingInterval: Int = DEFAULT_PING_INTERVAL, val key: String)
 
 data class ActuatorDto(val name: String, val pingInterval: Int, val on: Boolean, val damaged: Boolean) {
     constructor(actuator: Actuator) : this(actuator.name, actuator.pingInterval, actuator.on, actuator.damaged)
 }
 
-data class UpdatePingIntervalDto(val pingInterval: Int) {
-    constructor(actuator: Actuator) : this(actuator.pingInterval)
-}
+data class UpdatePingIntervalDto(val pingInterval: Int)
 
-data class UpdateActuatorStatusDto(val damaged: Boolean, val challenge: Int)
-
-data class ChallengeDto(val challenge: String)
+data class UpdateActuatorStatusDto(val damaged: Boolean, val timestamp: Int, val signature: String)

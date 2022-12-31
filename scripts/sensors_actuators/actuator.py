@@ -5,6 +5,11 @@ import sys
 import json
 import rsa
 import base64
+import time
+from Crypto.Signature import pkcs1_15
+from Crypto.Hash import SHA256
+from Crypto.PublicKey import RSA
+
 
 class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
     def __init__(self, name, key_folder):   
@@ -14,13 +19,13 @@ class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
         
     def update(self):
         print("Requesting configs for {}".format(self.name))
-        self.getChallenge(self.name)
+        data = {
+                'damaged': True if self.damaged else random.randint(1, 100) > 95,
+            }
+        data['signature'] = self.request_body_signature(data)
         req = requests.patch(
             f'http://localhost:8080/actuators/{self.name}',
-            json={
-                'damaged': True if self.damaged else random.randint(1, 100) > 95,
-                'challenge': self.challenge,
-            }
+            json=data
         )
         response = json.loads(req.text)
         self.on = response['on']
@@ -28,9 +33,4 @@ class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
         self.ping_interval = response['pingInterval']
         print(response)
     
-    def getChallenge(self):
-        req = requests.get(f'http://localhost:8080/actuators/{self.name}/challenge')
-        response = json.loads(req.text)
-        self.challenge = int(rsa.decrypt(base64.b64decode(response['challenge']), self.privateKey).decode('ascii')) + 1
-
 Actuator(sys.argv[1], sys.argv[2])

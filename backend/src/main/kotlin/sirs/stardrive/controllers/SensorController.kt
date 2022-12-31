@@ -18,6 +18,6 @@ class SensorController(val sensorService: SensorService) {
 
     @PatchMapping("/sensors/{sensorName}/update")
     fun updateSensorValue(@PathVariable sensorName: String, @RequestBody newValue: UpdateSensorValueDto) =
-        sensorService.updateSensorValue(sensorName, newValue.value)
+        sensorService.updateSensorValue(sensorName, newValue)
 
 }

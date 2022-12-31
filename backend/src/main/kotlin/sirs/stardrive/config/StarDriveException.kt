@@ -23,7 +23,7 @@ enum class ErrorMessage(val message: String) {
     USER_NOT_LOGGED_IN("User is not logged in"),
     VALID_REFRESH_TOKEN("User still has a valid refresh token"),
     INVALID_REFRESH_TOKEN("Invalid Refresh Token"),
-    INVALID_CHALLENGE("Invalid challenge"),
+    INVALID_SIGNATURE("Invalid Signature"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
