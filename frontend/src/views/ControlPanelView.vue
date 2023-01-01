@@ -63,7 +63,7 @@ async function onSubmitActuator() {
       actuatorPublickey.value.replace(/\s/g, "")
     );
     await createActuator(actuator);
-    await fetchActuators();
+    //await fetchActuators();
     dialogActuator.value = false;
   } catch (error) {
     /* empty */
@@ -80,8 +80,8 @@ async function onToggleActuator(actuator: ActuatorDto) {
   }
 }
 
-fetchSensors();
-fetchActuators();
+setInterval(fetchSensors, 1000);
+setInterval(fetchActuators, 1000);
 </script>
 
 <template>
@@ -110,11 +110,11 @@ fetchActuators();
                         ></v-text-field>
                       </v-row>
                       <v-row>
-                        <v-text-field
+                        <v-textarea
                           v-model="sensorPublickey"
                           label="Public Key"
                           required
-                        ></v-text-field>
+                        ></v-textarea>
                       </v-row>
                       <v-btn variant="tonal" color="secondary" type="submit"
                         >Create Sensor</v-btn
@@ -172,11 +172,11 @@ fetchActuators();
                         ></v-text-field>
                       </v-row>
                       <v-row>
-                        <v-text-field
+                        <v-textarea
                           v-model="actuatorPublickey"
                           label="Public Key"
                           required
-                        ></v-text-field>
+                        ></v-textarea>
                       </v-row>
                       <v-row>
                         <v-text-field
