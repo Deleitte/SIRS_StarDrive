@@ -18,6 +18,8 @@ import type { NewActuatorDto } from "@/models/NewActuatorDto";
 import { UserDto } from "@/models/UserDto";
 import type { AssignEmployeeToTeamDto } from "@/models/AssignEmployeeToTeamDto";
 import type { NewTeamDto } from "@/models/NewTeamDto";
+import {PartDto} from "@/models/PartDto";
+import {NewPartDto} from "@/models/NewPartDto";
 
 const http = axios.create({
   baseURL: "http://localhost:8080",
@@ -316,6 +318,31 @@ export async function createEmployee(assignDto: AssignEmployeeToTeamDto) {
   }
 }
 
+
+export async function getParts(): Promise<PartDto[]> {
+  try {
+    const res = await http.get("/parts");
+    return res.data.map((p: any) => new PartDto(p));
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
+export async function createPart(part: NewPartDto) {
+  try {
+    await http.post("/parts", part);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
 export async function createTeam(team: NewTeamDto) {
   try {
     await http.post("/teams", team);

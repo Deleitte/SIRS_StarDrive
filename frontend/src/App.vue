@@ -34,6 +34,12 @@ const menuItems = [
     to: "/employees",
     showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
   },
+  {
+    title: "Stock Management",
+    icon: "mdi-package-variant-closed",
+    to: "/stock",
+    showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
+  },
 ];
 
 const filteredMenuItems = computed(() =>

@@ -26,4 +26,13 @@ export default [
         loggedIn && role === "ENGINEER",
     },
   },
+  {
+    path: "/stock",
+    name: "stock",
+    component: () => import("../views/StockView.vue"),
+    meta: {
+        requiredAuth: (loggedIn: boolean, role: string) =>
+        loggedIn && role === "ENGINEER",
+    },
+  }
 ];

@@ -14,14 +14,14 @@ data class Part(
     var quantity: Int,
     val price: Int,
     @MongoId val id: ObjectId? = null) {
-    constructor(newPartDto: NewPartDto) : this(newPartDto.ref, newPartDto.name, newPartDto.quantity, newPartDto.price)
+    constructor(newPartDto: NewPartDto) : this(newPartDto.ref, newPartDto.name, 0, newPartDto.price)
 }
 
 data class PartDto(val ref: Int, val quantity: Int, val price: Int, val name: String) {
     constructor(part: Part) : this(part.ref, part.quantity, part.price, part.name)
 }
 
-data class NewPartDto(val ref: Int, val quantity: Int, val price: Int, val name: String)
+data class NewPartDto(val ref: Int, val price: Int, val name: String)
 
 data class UpdatePartQuantityDto(val quantity: Int)
 
