@@ -4,6 +4,7 @@ import { useAuthStore } from "@/stores/auth";
 import publicRoutes from "./public";
 import privateRoutes from "./private";
 import { useRedirectStore } from "@/stores/redirect";
+import {refreshToken} from "@/services/api";
 
 const showPrivateRoutes = import.meta.env.VITE_PRIVATE !== "false";
 
@@ -12,13 +13,22 @@ const router = createRouter({
   routes: [...publicRoutes, ...(showPrivateRoutes ? privateRoutes : [])],
 });
 
-router.beforeEach((to, from, next) => {
-  const { loggedIn, role } = useAuthStore();
+router.beforeEach(async (to, from, next) => {
+  const authStore = useAuthStore();
   const { setUrl } = useRedirectStore();
-  const redirectTo = loggedIn ? "home" : "login";
+
+  if (!authStore.loggedIn) {
+    try {
+      await refreshToken();
+    } catch (err) {
+      /* empty */
+    }
+  }
+
+  const redirectTo = authStore.loggedIn ? "home" : "login";
 
   const shouldRedirect = // @ts-ignore
-    to.meta.requiredAuth && !to.meta.requiredAuth(loggedIn, role);
+    to.meta.requiredAuth && !to.meta.requiredAuth(authStore.loggedIn, authStore.role);
 
   if (shouldRedirect && !loggedIn) setUrl(to.path);
   else if (!to.redirectedFrom) setUrl(undefined);

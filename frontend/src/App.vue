@@ -57,14 +57,6 @@ const toggleTheme = () => {
 
 onMounted(async () => {
   theme.value = localStorage.getItem("theme") ?? "dark";
-  // TODO: need a better on first load than this
-  if (!authStore.token) {
-    try {
-      await refreshToken();
-    } catch (err) {
-      /* empty */
-    }
-  }
 });
 </script>
 
