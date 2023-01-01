@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from "vue-router";
-import { ref, computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 
 import { useAuthStore } from "@/stores/auth";
-import router from "@/router";
-import { logout, refreshToken } from "@/services/api";
+import { refreshToken } from "@/services/api";
+import AccountMenu from "@/components/AccountMenu.vue";
 
 const drawer = ref(false);
 
@@ -34,7 +34,7 @@ const menuItems = [
     icon: "mdi-account-group",
     to: "/employees",
     showIf: () => authStore.loggedIn,
-  }
+  },
 ];
 
 const filteredMenuItems = computed(() =>
@@ -61,11 +61,6 @@ onMounted(async () => {
     }
   }
 });
-
-const onLogout = async () => {
-  await logout();
-  await router.push({ name: "login" });
-};
 </script>
 
 <template>
@@ -96,38 +91,7 @@ const onLogout = async () => {
           >Toggle theme</v-btn
         >
 
-        <v-menu>
-          <template #activator="{ props }">
-            <v-btn prepend-icon v-bind="props">
-              <v-avatar icon="mdi-account" size="32" />
-            </v-btn>
-          </template>
-
-          <v-list>
-            <v-list-item
-              v-if="authStore.token"
-              prepend-icon="mdi-logout"
-              title="Logout"
-              @click="onLogout"
-            ></v-list-item>
-
-            <v-list-item
-              v-if="!authStore.token"
-              prepend-icon="mdi-login"
-              :to="{ name: 'login' }"
-              title="Login"
-              @click="drawer = false"
-            ></v-list-item>
-
-            <v-list-item
-              v-if="!authStore.token"
-              prepend-icon="mdi-account-plus"
-              :to="{ name: 'register' }"
-              title="Register"
-              @click="drawer = false"
-            ></v-list-item>
-          </v-list>
-        </v-menu>
+        <account-menu />
       </template>
     </v-app-bar>
 

@@ -1,5 +1,4 @@
 from time import sleep
-import rsa
 from Crypto.Signature import pkcs1_15
 from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
@@ -7,10 +6,6 @@ import json
 import base64
 import time
 
-# openssl genrsa -f4 -out test.priv 4096
-# openssl rsa -in test.priv -pubout > test.pub
-# openssl rsa -pubin -in test.pub -modulus -noout
-# openssl rsa -pubin -in test.pub -text -noout
 
 class TimeUpdatedMachine:
     def __init__(self, name, key_folder, ping_interval=None):

@@ -1,9 +1,9 @@
 export class NewSensorDto {
-    name!: string;
-    key!: string;
+  name!: string;
+  key!: string;
 
-    constructor(name: string, key: string) {
-        this.name = name;
-        this.key = key;
-    }
+  constructor(name: string, key: string) {
+    this.name = name;
+    this.key = key;
+  }
 }

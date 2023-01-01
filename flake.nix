@@ -17,7 +17,7 @@
             nodejs
             mongosh
             openssl
-            (pkgs.python3.withPackages (p: with p; [ requests ]))
+            (pkgs.python3.withPackages (p: with p; [ requests pycryptodome ]))
           ];
         };
       }

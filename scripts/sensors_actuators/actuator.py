@@ -3,7 +3,6 @@ import requests
 import timeUpdatedMachine
 import sys
 import json
-import rsa
 import base64
 import time
 from Crypto.Signature import pkcs1_15

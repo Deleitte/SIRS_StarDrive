@@ -1,28 +1,8 @@
 <script setup lang="ts">
-import { useAuthStore } from "@/stores/auth";
-import { computed, ref } from "vue";
-import { getEmployeesWorkingShifts, getStats} from "@/services/api";
+import { ref } from "vue";
+import { getEmployeesWorkingShifts, getStats } from "@/services/api";
 import { StatsDto } from "@/models/StatsDto";
-import {EmployeeWorkingShiftsDto} from "@/models/EmployeeWorkingShiftsDto";
-
-const authStore = useAuthStore();
-const message = computed(() =>
-  authStore.token
-    ? `Welcome ${authStore.username} (${authStore.role})`
-    : "You are not logged in"
-);
-
-/*
-const teams = ref<TeamDto[]>([]);
-async function fetchTeams() {
-  try {
-    teams.value = await getTeams();
-  } catch (error) {
-  }
-}
-
-fetchTeams();
-*/
+import { EmployeeWorkingShiftsDto } from "@/models/EmployeeWorkingShiftsDto";
 
 const stats = ref<StatsDto>();
 const employees = ref<EmployeeWorkingShiftsDto[]>([]);
@@ -48,10 +28,6 @@ fetchEmployees();
 </script>
 
 <template>
-  <v v-if="authStore.token">
-    <h1>{{ message }}</h1>
-    <v-divider></v-divider>
-  </v>
   <h1>Production Stats</h1>
   <div>
     <v-row>
@@ -138,9 +114,12 @@ fetchEmployees();
             <v-row>
               <v-col>
                 <p>{{ employee.name }}</p>
-                  <div v-for="shift in employee.workingShifts">
-                    <p>{{shift.weekDay}} : {{ shift.startTime }} - {{ shift.endTime }}</p>
-                  </div>
+                <div v-for="shift in employee.workingShifts">
+                  <p>
+                    {{ shift.weekDay }} : {{ shift.startTime }} -
+                    {{ shift.endTime }}
+                  </p>
+                </div>
               </v-col>
             </v-row>
           </v-container>
