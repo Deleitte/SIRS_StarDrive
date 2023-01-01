@@ -6,6 +6,8 @@ import {
   getActuators,
   createSensor,
   createActuator,
+  turnOffActuator,
+  turnOnActuator,
 } from "@/services/api";
 import { ActuatorDto } from "@/models/ActuatorDto";
 import { NewSensorDto } from "@/models/NewSensorDto";
@@ -63,6 +65,16 @@ async function onSubmitActuator() {
     await createActuator(actuator);
     await fetchActuators();
     dialogActuator.value = false;
+  } catch (error) {
+    /* empty */
+  }
+}
+
+async function onToggleActuator(actuator: ActuatorDto) {
+  try {
+    if (actuator.on) await turnOffActuator(actuator);
+    else await turnOnActuator(actuator);
+    await fetchActuators();
   } catch (error) {
     /* empty */
   }
@@ -201,10 +213,11 @@ fetchActuators();
             <td>{{ item.name }}</td>
             <td class="text-center">{{ item.interval }}</td>
             <td class="text-center">
-              <v-icon v-if="item.on" color="green"
-                >mdi-checkbox-blank-circle</v-icon
-              >
-              <v-icon v-else color="red">mdi-checkbox-blank-circle</v-icon>
+              <v-btn icon variant="plain" @click="onToggleActuator(item)">
+                <v-icon :color="item.on ? 'green' : 'red'"
+                  >mdi-checkbox-blank-circle</v-icon
+                >
+              </v-btn>
             </td>
             <td class="text-center">
               <v-icon v-if="item.damaged" color="orange darken-2"

@@ -160,6 +160,30 @@ export async function getActuators(): Promise<ActuatorDto[]> {
   }
 }
 
+export async function turnOnActuator(actuator: ActuatorDto) {
+  try {
+    await http.patch(`actuators/${actuator.name}/on`);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
+export async function turnOffActuator(actuator: ActuatorDto) {
+  try {
+    await http.patch(`actuators/${actuator.name}/off`);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
 export async function getStats(): Promise<StatsDto> {
   try {
     const res = await http.get("/stats");
