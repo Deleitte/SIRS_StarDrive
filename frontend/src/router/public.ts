@@ -28,19 +28,4 @@ export default [
       requiredAuth: (loggedIn: boolean, role: string) => loggedIn,
     },
   },
-  {
-    path: "/controlpanel",
-    name: "controlpanel",
-    component: () => import("../views/ControlPanelView.vue"),
-  },
-  {
-    path: "/private",
-    name: "private",
-    component: () => import("../views/PrivateView.vue"),
-  },
-  {
-  path: "/employees",
-  name: "employees",
-  component: () => import("../views/EmployeeManagementView.vue"),
-  }
 ];

@@ -15,30 +15,29 @@ const menuItems = [
     title: "Home",
     icon: "mdi-home",
     to: "/",
-    showIf: () => true || authStore.loggedIn,
   },
   {
     title: "Personal Data",
     icon: "mdi-account",
     to: "/private",
-    showIf: () => authStore.loggedIn,
+    showIf: () => authStore.loggedIn && authStore.role === "EMPLOYEE",
   },
   {
     title: "Control Panel",
     icon: "mdi-cog",
     to: "/controlpanel",
-    showIf: () => authStore.loggedIn,
+    showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
   },
   {
     title: "Employee Management",
     icon: "mdi-account-group",
     to: "/employees",
-    showIf: () => authStore.loggedIn,
+    showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
   },
 ];
 
 const filteredMenuItems = computed(() =>
-  menuItems.filter((item) => item.showIf())
+  menuItems.filter((item) => !item.showIf || item.showIf())
 );
 
 const theme = ref("dark");

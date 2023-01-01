@@ -1,8 +1,8 @@
 export class ActuatorDto {
-  name!: String;
-  interval!: Number;
-  on!: Boolean;
-  damaged!: Boolean;
+  name!: string;
+  interval!: number;
+  on!: boolean;
+  damaged!: boolean;
 
   constructor(jsonObj?: ActuatorDto) {
     if (jsonObj) {

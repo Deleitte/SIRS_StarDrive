@@ -12,11 +12,15 @@ import {
 import { ActuatorDto } from "@/models/ActuatorDto";
 import { NewSensorDto } from "@/models/NewSensorDto";
 import { NewActuatorDto } from "@/models/NewActuatorDto";
+import ActuatorPingIntervalDialog from "@/views/ActuatorPingIntervalDialog.vue";
 
 const sensors = ref<SensorDto[]>([]);
 const actuators = ref<ActuatorDto[]>([]);
 const dialogSensor = ref(false);
 const dialogActuator = ref(false);
+
+const dialogActuatorPingInterval = ref(false);
+const actuatorForPingInterval = ref<ActuatorDto | undefined>(undefined);
 
 const sensorName = ref("");
 const sensorPublickey = ref("");
@@ -78,6 +82,11 @@ async function onToggleActuator(actuator: ActuatorDto) {
   } catch (error) {
     /* empty */
   }
+}
+
+function openDialogActuatorPingInterval(actuator: ActuatorDto) {
+  actuatorForPingInterval.value = actuator;
+  dialogActuatorPingInterval.value = true;
 }
 
 setInterval(fetchSensors, 1000);
@@ -211,7 +220,14 @@ setInterval(fetchActuators, 1000);
         <tbody>
           <tr v-for="item in actuators" :key="item.name">
             <td>{{ item.name }}</td>
-            <td class="text-center">{{ item.interval }}</td>
+            <td class="text-center">
+              <span
+                @click="openDialogActuatorPingInterval(item)"
+                class="spy-button"
+              >
+                {{ item.interval }}
+              </span>
+            </td>
             <td class="text-center">
               <v-btn icon variant="plain" @click="onToggleActuator(item)">
                 <v-icon :color="item.on ? 'green' : 'red'"
@@ -230,4 +246,16 @@ setInterval(fetchActuators, 1000);
       </v-table>
     </v-card-text>
   </v-card>
+
+  <actuator-ping-interval-dialog
+    :dialog="dialogActuatorPingInterval"
+    :actuator="actuatorForPingInterval"
+    @close-dialog="dialogActuatorPingInterval = false"
+  />
 </template>
+
+<style scoped>
+.spy-button {
+  cursor: pointer;
+}
+</style>

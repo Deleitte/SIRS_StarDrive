@@ -184,6 +184,23 @@ export async function turnOffActuator(actuator: ActuatorDto) {
   }
 }
 
+export async function updateActuatorPingInterval(
+  actuator: ActuatorDto,
+  pingInterval: number
+) {
+  try {
+    await http.patch(`actuators/${actuator.name}/pingInterval`, {
+      pingInterval,
+    });
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
 export async function getStats(): Promise<StatsDto> {
   try {
     const res = await http.get("/stats");
