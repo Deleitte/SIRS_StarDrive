@@ -40,6 +40,10 @@ data class RefreshToken(val jti: String, val exp: Long)
 
 data class NewUserDto(val name: String, val username: String, var password: String, val otpKey: String)
 
+data class UserDto(val name: String, val username: String, val role: Role) {
+    constructor(user: User) : this(user.name, user.username, user.role)
+}
+
 data class ChangePasswordDto(val oldPassword: String, val newPassword: String)
 
 data class TotpDto(val guess: Int)

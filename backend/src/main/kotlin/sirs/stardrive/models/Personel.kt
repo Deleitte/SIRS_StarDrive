@@ -44,12 +44,12 @@ data class NewEmployeeDto(
     val team: String
 )
 
-data class EmployeeDto(val name: String, val username: String, val absentWorkingDays: Int, val parentalLeaves: Int, val workingShifts: List<WorkingShift>) {
-    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.absentWorkingDays, employee.parentalLeaves, employee.workingShifts)
+data class EmployeeDto(val name: String, val username: String, val team: String, val salary: Int, val absentWorkingDays: Int, val parentalLeaves: Int) {
+    constructor(employee: Employee) : this(employee.user.name, employee.user.username, employee.team.name, employee.team.salary, employee.absentWorkingDays, employee.parentalLeaves)
 }
 
-data class EmployeePrivateDataDto(val absentWorkingDays: Int, val parentalLeaves: Int) {
-    constructor(employee: Employee) : this(employee.absentWorkingDays, employee.parentalLeaves)
+data class EmployeePrivateDataDto(val salary: Int, val absentWorkingDays: Int, val parentalLeaves: Int) {
+    constructor(employee: Employee) : this(employee.team.salary, employee.absentWorkingDays, employee.parentalLeaves)
 }
 
 @Repository
@@ -71,3 +71,7 @@ data class WorkingShiftDto(
     val startTime: String,
     val endTime: String
 )
+
+data class EmployeeWorkingShiftsDto(val name: String, val workingShifts: List<WorkingShift>) {
+    constructor(employee: Employee) : this(employee.user.name, employee.workingShifts)
+}

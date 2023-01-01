@@ -37,5 +37,10 @@ export default [
     path: "/private",
     name: "private",
     component: () => import("../views/PrivateView.vue"),
+  },
+  {
+  path: "/employees",
+  name: "employees",
+  component: () => import("../views/EmployeeManagementView.vue"),
   }
 ];

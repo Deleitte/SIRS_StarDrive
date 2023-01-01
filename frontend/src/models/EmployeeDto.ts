@@ -3,13 +3,20 @@ import {WorkingShiftDto} from "@/models/WorkingShiftDto";
 export class EmployeeDto {
   name!: string;
   username!: string;
-  workingShifts!: WorkingShiftDto[];
+  team!: string;
+  salary!: number;
+  absentWorkingDays!: number;
+  parentalLeaves!: number;
+
 
   constructor(jsonObj?: EmployeeDto) {
     if (jsonObj) {
       this.name = jsonObj.name;
       this.username = jsonObj.username;
-        this.workingShifts = jsonObj.workingShifts;
+      this.team = jsonObj.team;
+      this.salary = jsonObj.salary;
+      this.absentWorkingDays = jsonObj.absentWorkingDays;
+      this.parentalLeaves = jsonObj.parentalLeaves;
     }
   }
 }

@@ -25,10 +25,16 @@ class TeamController(private val teamService: TeamService) {
     @PreAuthorize("isAuthenticated()")
     fun getPrivateEmployeeInfo(): EmployeePrivateDataDto = teamService.getEmployeePrivateInfo();
 
-    @PatchMapping("/workingshifts/{employeeName}/")
-    fun addWorkingShift(@PathVariable employeeName: String, @RequestBody newWorkingShift: WorkingShiftDto): EmployeeDto =
+    @PatchMapping("/workingshifts/{employeeName}")
+    fun addWorkingShift(@PathVariable employeeName: String, @RequestBody newWorkingShift: WorkingShiftDto): EmployeeWorkingShiftsDto =
         teamService.addWorkingShift(employeeName, newWorkingShift)
+
+    @GetMapping("/workingshifts")
+    fun getWorkingShifts(): List<EmployeeWorkingShiftsDto> = teamService.getWorkingShifts()
 
     @GetMapping("/employees")
     fun getEmployees(): List<EmployeeDto> = teamService.getEmployees()
+
+    @GetMapping("/employees/new")
+    fun getNewUsers(): List<UserDto> = teamService.getNewUsers()
 }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useAuthStore } from "@/stores/auth";
 import { computed, ref } from "vue";
-import {getEmployees, getStats} from "@/services/api";
+import { getEmployeesWorkingShifts, getStats} from "@/services/api";
 import { StatsDto } from "@/models/StatsDto";
-import {EmployeeDto} from "@/models/EmployeeDto";
+import {EmployeeWorkingShiftsDto} from "@/models/EmployeeWorkingShiftsDto";
 
 const authStore = useAuthStore();
 const message = computed(() =>
@@ -25,7 +25,7 @@ fetchTeams();
 */
 
 const stats = ref<StatsDto>();
-const employees = ref<EmployeeDto[]>([]);
+const employees = ref<EmployeeWorkingShiftsDto[]>([]);
 
 async function fetchStats() {
   try {
@@ -37,7 +37,7 @@ async function fetchStats() {
 
 async function fetchEmployees() {
   try {
-    employees.value = await getEmployees();
+    employees.value = await getEmployeesWorkingShifts();
   } catch (error) {
     /* empty */
   }

@@ -19,6 +19,7 @@ fetchPrivateData();
 <template>
   <div>
     <h1>Personal Data</h1>
+    <p>Salary: {{privateData?.salary}}</p>
     <p>Absent working days: {{privateData?.absentDays}}</p>
     <p>Parental leaves: {{privateData?.parentalLeaveDays}}</p>
   </div>

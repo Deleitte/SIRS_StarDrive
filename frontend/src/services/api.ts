@@ -12,6 +12,12 @@ import { StatsDto } from "@/models/StatsDto";
 import type { ChangePasswordDto } from "@/models/ChangePasswordDto";
 import {PrivateDataDto} from "@/models/PrivateDataDto";
 import {EmployeeDto} from "@/models/EmployeeDto";
+import {EmployeeWorkingShiftsDto} from "@/models/EmployeeWorkingShiftsDto";
+import {NewSensorDto} from "@/models/NewSensorDto";
+import {NewActuatorDto} from "@/models/NewActuatorDto";
+import {UserDto} from "@/models/UserDto";
+import {AssignEmployeeToTeamDto} from "@/models/AssignEmployeeToTeamDto";
+import {NewTeamDto} from "@/models/NewTeamDto";
 
 const http = axios.create({
   baseURL: "http://localhost:8080",
@@ -180,10 +186,96 @@ export async function getPrivateData() : Promise<PrivateDataDto> {
   }
 }
 
+export async function getEmployeesWorkingShifts() : Promise<EmployeeWorkingShiftsDto[]> {
+    try {
+        const res = await http.get("/workingshifts");
+        return res.data.map((e: any) => new EmployeeWorkingShiftsDto(e));
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
 export async function getEmployees() : Promise<EmployeeDto[]> {
     try {
         const res = await http.get("/employees");
         return res.data.map((e: any) => new EmployeeDto(e));
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function createSensor(sensor: NewSensorDto) {
+    try {
+        await http.post("/sensors", sensor);
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function createActuator(actuator: NewActuatorDto) {
+    try {
+        await http.post("/actuators", actuator);
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function assignEmployeeToTeam(dto: AssignEmployeeToTeamDto) {
+    try {
+        await http.post(`/employees`, dto);
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function getNewUsers() : Promise<UserDto[]> {
+    try {
+        const res = await http.get("/employees/new");
+        return res.data.map((u: any) => new UserDto(u));
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function createEmployee(assignDto: AssignEmployeeToTeamDto) {
+    try {
+        await http.post("/employees", assignDto);
+    } catch (error) {
+        throw new StarDriveError(
+        await errorMessage(error as AxiosError),
+        // @ts-ignore
+        error.response.data.code
+        );
+    }
+}
+
+export async function createTeam(team: NewTeamDto) {
+    try {
+        await http.post("/teams", team);
     } catch (error) {
         throw new StarDriveError(
         await errorMessage(error as AxiosError),

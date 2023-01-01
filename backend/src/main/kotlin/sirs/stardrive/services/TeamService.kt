@@ -36,6 +36,7 @@ class TeamService(
 
             employee = employeeRepository.save(employee)
             user.role = Role.EMPLOYEE
+            userRepository.save(user)
             EmployeeDto(employee)
         } catch (e: Exception) {
             throw StarDriveException(ErrorMessage.EMPLOYEE_ALREADY_EXISTS)
@@ -59,13 +60,21 @@ class TeamService(
         return EmployeePrivateDataDto(employee)
     }
 
-    fun addWorkingShift(employeeName: String, workingShiftDto: WorkingShiftDto): EmployeeDto {
+    fun addWorkingShift(employeeName: String, workingShiftDto: WorkingShiftDto): EmployeeWorkingShiftsDto {
         val user = userRepository.findByUsername(employeeName)
             ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, employeeName)
         val employee = employeeRepository.findByUser(user)
             ?: throw StarDriveException(ErrorMessage.EMPLOYEE_NOT_FOUND, employeeName)
         val workingShift = WorkingShift(workingShiftDto)
         employee.workingShifts.add(workingShift)
-        return EmployeeDto(employeeRepository.save(employee))
+        return EmployeeWorkingShiftsDto(employeeRepository.save(employee))
+    }
+
+    fun getWorkingShifts(): List<EmployeeWorkingShiftsDto> {
+        return employeeRepository.findAll().map { EmployeeWorkingShiftsDto(it) }
+    }
+
+    fun getNewUsers(): List<UserDto> {
+        return userRepository.findAll().filter { it.role == Role.NEW }.map { UserDto(it) }
     }
 }

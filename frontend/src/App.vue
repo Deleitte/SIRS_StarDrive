@@ -29,6 +29,12 @@ const menuItems = [
     to: "/controlpanel",
     showIf: () => authStore.loggedIn,
   },
+  {
+    title: "Employee Management",
+    icon: "mdi-account-group",
+    to: "/employees",
+    showIf: () => authStore.loggedIn,
+  }
 ];
 
 const filteredMenuItems = computed(() =>
