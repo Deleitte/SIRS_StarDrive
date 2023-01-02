@@ -56,7 +56,6 @@ async function onSubmit() {
               variant="tonal"
               block
               type="submit"
-              @click="onSubmit"
             >
               Update</v-btn
             >
