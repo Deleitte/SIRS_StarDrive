@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {PartDto} from "@/models/PartDto";
-import {createPart, getParts} from "@/services/api";
+import {buyPart, createPart, getParts} from "@/services/api";
 import {NewPartDto} from "@/models/NewPartDto";
 
 const dialogNewPart = ref(false);
+const dialogBuyPart = ref(false);
 
 const parts = ref<PartDto[]>([]);
 const newPart = ref(new NewPartDto({}));
+
+const quantity = ref(0);
+const selectedPart = ref<PartDto>();
 
 async function fetchParts() {
     try {
@@ -29,6 +33,17 @@ async function onSubmitNewPart() {
       /* empty */
     }
 }
+
+async function onSubmitBuyPart() {
+  try {
+    await buyPart(selectedPart.value, quantity.value);
+    await fetchParts();
+    dialogBuyPart.value = false;
+  } catch (e) {
+    /* empty */
+  }
+}
+
 </script>
 <template>
   <v-card>
@@ -39,6 +54,31 @@ async function onSubmitNewPart() {
             <h2>Parts</h2>
           </v-col>
           <v-col class="d-flex justify-end">
+            <div class="text-center">
+              <v-dialog v-model="dialogBuyPart">
+                <template v-slot:activator="{ props }">
+                  <v-btn color="secondary" v-bind="props"> Buy Part </v-btn>
+                </template>
+                <v-form @submit.prevent="onSubmitBuyPart">
+                  <v-card>
+                    <v-card-text>
+                      <v-select
+                          v-model="selectedPart"
+                          label="User"
+                          :items="parts"
+                          item-title="ref"
+                          item-value="ref"
+                          return-object
+                      ></v-select>
+                      <v-text-field v-model="quantity" label="Quantity" required />
+                    </v-card-text>
+                    <div class="text-center">
+                      <v-btn color="primary" type="submit"> Buy </v-btn>
+                    </div>
+                  </v-card>
+                </v-form>
+              </v-dialog>
+            </div>
             <div class="text-center">
               <v-dialog v-model="dialogNewPart">
                 <template v-slot:activator="{ props }">

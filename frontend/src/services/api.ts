@@ -343,6 +343,20 @@ export async function createPart(part: NewPartDto) {
     );
   }
 }
+
+export async function buyPart(part : PartDto, quantity: number): Promise<PartDto> {
+  try {
+    const res = await http.patch(`/parts/${part.ref}`, { quantity });
+    return new PartDto(res.data);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
 export async function createTeam(team: NewTeamDto) {
   try {
     await http.post("/teams", team);
