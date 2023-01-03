@@ -11,7 +11,7 @@ import java.util.*
 
 
 @Service
-class ActuatorService(private val actuatorRepository: ActuatorRepository) {
+class ActuatorService(private val actuatorRepository: ActuatorRepository, private val logService: LogService) {
     fun getActuators() = actuatorRepository.findAll().map { ActuatorDto(it) }
 
     fun createActuator(newActuatorDto: NewActuatorDto) : ActuatorDto {
@@ -25,6 +25,7 @@ class ActuatorService(private val actuatorRepository: ActuatorRepository) {
     fun updatePingInterval(actuatorName: String, pingInterval: Int) : ActuatorDto {
         val actuator = actuatorRepository.findByName(actuatorName) ?: throw StarDriveException(ErrorMessage.ACTUATOR_NOT_FOUND)
         actuator.pingInterval = pingInterval
+        logService.createLog("Updated ping interval of actuator $actuatorName to $pingInterval")
         return ActuatorDto(actuatorRepository.save(actuator))
     }
 
@@ -32,6 +33,7 @@ class ActuatorService(private val actuatorRepository: ActuatorRepository) {
         val actuator = actuatorRepository.findByName(actuatorName) ?: throw StarDriveException(ErrorMessage.ACTUATOR_NOT_FOUND)
         if (!actuator.damaged) {
             actuator.on = true
+            logService.createLog("Actuator $actuatorName turned on");
         }
         return ActuatorDto(actuatorRepository.save(actuator))
     }
@@ -39,6 +41,7 @@ class ActuatorService(private val actuatorRepository: ActuatorRepository) {
     fun turnOffActuator(actuatorName: String) : ActuatorDto {
         val actuator = actuatorRepository.findByName(actuatorName) ?: throw StarDriveException(ErrorMessage.ACTUATOR_NOT_FOUND)
         actuator.on = false
+        logService.createLog("Actuator $actuatorName turned off");
         return ActuatorDto(actuatorRepository.save(actuator))
     }
 
@@ -50,7 +53,8 @@ class ActuatorService(private val actuatorRepository: ActuatorRepository) {
             if (status.damaged) {
                 actuator.on = false
             }
-            return ActuatorDto(actuatorRepository.save(actuator))
+            val actuatorDto = ActuatorDto(actuatorRepository.save(actuator));
+            return actuatorDto;
         } else {
             throw StarDriveException(ErrorMessage.INVALID_SIGNATURE)
         }
