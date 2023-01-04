@@ -64,7 +64,7 @@ class UserService(
         )
 
         val encodedPassword = passwordEncoder.encode(newUserDto.password)
-        val encodedTotpKey: String = BaseEncoding.base32().encode(generateOtpKey().encoded)
+        val encodedTotpKey: String = totpEncryptor.encrypt(BaseEncoding.base32().encode(generateOtpKey().encoded))
 
         val newUser = NewUserDto(newUserDto.name, newUserDto.username, encodedPassword, encodedTotpKey)
         userRepository.save(User(newUser))
@@ -118,7 +118,7 @@ class UserService(
     @Throws(StarDriveException::class)
     fun getTotpSecret(username: String): String {
         val user = userRepository.findByUsername(username) ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND)
-        return totpEncryptor.decrypt(user.totpKey)
+        return totpEncryptor.decrypt(user.totpKey!!)
     }
 
     @Throws(StarDriveException::class)

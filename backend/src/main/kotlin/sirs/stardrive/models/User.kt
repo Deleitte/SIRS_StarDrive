@@ -9,7 +9,6 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.stereotype.Repository
-import java.time.Instant
 
 @Document
 data class User(
@@ -17,7 +16,7 @@ data class User(
     @Indexed(unique = true) @get:JvmName("user_name") val username: String,
     @get:JvmName("pass") var password: String,
     var role: Role,
-    val totpKey: String,
+    val totpKey: String?,
     var refreshToken: RefreshToken?,
     @MongoId val id: ObjectId? = null
 ) : UserDetails {
@@ -38,7 +37,7 @@ data class User(
 
 data class RefreshToken(val jti: String, val exp: Long)
 
-data class NewUserDto(val name: String, val username: String, var password: String, val otpKey: String)
+data class NewUserDto(val name: String, val username: String, var password: String, val otpKey: String?)
 
 data class UserDto(val name: String, val username: String, val role: Role) {
     constructor(user: User) : this(user.name, user.username, user.role)
