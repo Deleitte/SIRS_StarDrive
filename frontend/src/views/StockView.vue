@@ -36,7 +36,7 @@ async function onSubmitNewPart() {
 
 async function onSubmitBuyPart() {
   try {
-    await buyPart(selectedPart.value, quantity.value);
+    await buyPart(selectedPart.value!, quantity.value);
     await fetchParts();
     dialogBuyPart.value = false;
   } catch (e) {
@@ -64,7 +64,7 @@ async function onSubmitBuyPart() {
                     <v-card-text>
                       <v-select
                           v-model="selectedPart"
-                          label="User"
+                          label="Part"
                           :items="parts"
                           item-title="ref"
                           item-value="ref"
