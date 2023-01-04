@@ -67,12 +67,12 @@ class AuthController(
     }
 
     @PostMapping("/register")
-    fun register(@RequestBody newUserDto: NewUserDto): LoginResponseDto {
+    fun register(@RequestBody newUserDto: NewUserDto): RegisterResponseDto {
         userService.createUser(newUserDto)
         val authenticationToken = UsernamePasswordAuthenticationToken(newUserDto.username, newUserDto.password)
         val authentication = authenticationManager.authenticate(authenticationToken)
         val token = tokenService.generateAccessToken(authentication)
-        return LoginResponseDto(token)
+        return RegisterResponseDto(token, userService.getTotpSecret(authentication.name))
     }
 
     @PostMapping("/token/2fa")
