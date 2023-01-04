@@ -75,3 +75,5 @@ data class WorkingShiftDto(
 data class EmployeeWorkingShiftsDto(val name: String, val workingShifts: List<WorkingShift>) {
     constructor(employee: Employee) : this(employee.user.name, employee.workingShifts)
 }
+
+data class NewEngineerDto(val username: String)

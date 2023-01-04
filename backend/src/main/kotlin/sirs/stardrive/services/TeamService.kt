@@ -77,4 +77,11 @@ class TeamService(
     fun getNewUsers(): List<UserDto> {
         return userRepository.findAll().filter { it.role == Role.NEW }.map { UserDto(it) }
     }
+
+    fun createEngineer(new: NewEngineerDto ): UserDto {
+        val user = userRepository.findByUsername(new.username)
+            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, new.username)
+        user.role = Role.ENGINEER
+        return UserDto(userRepository.save(user))
+    }
 }

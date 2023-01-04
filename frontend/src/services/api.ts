@@ -19,10 +19,10 @@ import {UserDto} from "@/models/UserDto";
 import type {AssignEmployeeToTeamDto} from "@/models/AssignEmployeeToTeamDto";
 import type {NewTeamDto} from "@/models/NewTeamDto";
 import {PartDto} from "@/models/PartDto";
-import {NewPartDto} from "@/models/NewPartDto";
 import {LogDto} from "@/models/LogDto";
 import type {NewPartDto} from "@/models/NewPartDto";
 import {RegisterResponseDto} from "@/models/RegisterResponseDto";
+import {NewEngineerDto} from "@/models/NewEngineerDto";
 
 const http = axios.create({
     baseURL: "http://localhost:8080",
@@ -382,6 +382,18 @@ export async function getLogs(): Promise<LogDto[]> {
       error.response.data.code
     );
   }
+}
+
+export async function createEngineer(engineer: NewEngineerDto) : Promise<UserDto> {
+    try {
+        await http.post("/engineers", engineer);
+    } catch (error) {
+        throw new StarDriveError(
+            await errorMessage(error as AxiosError),
+            // @ts-ignore
+            error.response.data.code
+        );
+    }
 }
 
 async function errorMessage(error: AxiosError) {

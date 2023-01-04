@@ -37,4 +37,8 @@ class TeamController(private val teamService: TeamService) {
 
     @GetMapping("/employees/new")
     fun getNewUsers(): List<UserDto> = teamService.getNewUsers()
+
+    @PostMapping("/engineers")
+    fun createEngineer(@RequestBody newEngineerDto: NewEngineerDto): UserDto =
+        teamService.createEngineer(newEngineerDto)
 }

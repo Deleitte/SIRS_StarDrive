@@ -45,6 +45,12 @@ const menuItems = [
     icon: "mdi-file-document",
     to: "/logs",
     showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
+  },
+  {
+    title: "Dashboard",
+    icon: "mdi-view-dashboard",
+    to: "/admin",
+  showIf: () => authStore.loggedIn && authStore.role === "ADMIN",
   }
 ];
 

@@ -43,5 +43,14 @@ export default [
         requiredAuth: (loggedIn: boolean, role: string) =>
         loggedIn && role === "ENGINEER",
     }
+  },
+  {
+    path: "/admin",
+    name: "admin",
+    component: () => import("../views/AdminView.vue"),
+    meta: {
+        requiredAuth: (loggedIn: boolean, role: string) =>
+        loggedIn && role === "ADMIN",
+    }
   }
 ];
