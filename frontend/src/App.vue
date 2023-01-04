@@ -40,6 +40,12 @@ const menuItems = [
     to: "/stock",
     showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
   },
+  {
+    title: "Logs",
+    icon: "mdi-file-document",
+    to: "/logs",
+    showIf: () => authStore.loggedIn && authStore.role === "ENGINEER",
+  }
 ];
 
 const filteredMenuItems = computed(() =>
