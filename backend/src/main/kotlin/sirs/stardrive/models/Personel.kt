@@ -77,3 +77,5 @@ data class EmployeeWorkingShiftsDto(val name: String, val workingShifts: List<Wo
 }
 
 data class NewEngineerDto(val username: String)
+
+data class NewExternalUserDto(val username: String)

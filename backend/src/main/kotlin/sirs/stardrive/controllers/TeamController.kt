@@ -50,4 +50,9 @@ class TeamController(private val teamService: TeamService) {
     @PreAuthorize("isAuthenticated() && hasAuthority('SCOPE_ADMIN')")
     fun createEngineer(@RequestBody newEngineerDto: NewEngineerDto): UserDto =
         teamService.createEngineer(newEngineerDto)
+
+    @PostMapping("/externalUsers")
+    @PreAuthorize("isAuthenticated() && hasAuthority('SCOPE_ADMIN')")
+    fun createExternalUser(@RequestBody newExternalUserDto: NewExternalUserDto): UserDto =
+        teamService.createExternalUser(newExternalUserDto)
 }

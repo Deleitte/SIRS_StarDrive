@@ -84,4 +84,11 @@ class TeamService(
         user.role = Role.ENGINEER
         return UserDto(userRepository.save(user))
     }
+
+    fun createExternalUser(new: NewExternalUserDto): UserDto {
+        val user = userRepository.findByUsername(new.username)
+            ?: throw StarDriveException(ErrorMessage.USER_NOT_FOUND, new.username)
+        user.role = Role.EXTERNAL
+        return UserDto(userRepository.save(user))
+    }
 }

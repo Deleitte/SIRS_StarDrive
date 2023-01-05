@@ -24,6 +24,7 @@ import type { NewPartDto } from "@/models/NewPartDto";
 import { RegisterResponseDto } from "@/models/RegisterResponseDto";
 import type { NewEngineerDto } from "@/models/NewEngineerDto";
 import { TotpDto } from "@/models/TotpDto";
+import {NewExternalUserDto} from "@/models/NewExternalUserDto";
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -419,6 +420,19 @@ export async function createEngineer(
       error.response.data.code
     );
   }
+}
+
+export async function createExternalUser(externalUser: NewExternalUserDto): Promise<UserDto> {
+    try {
+        const res = await http.post("/externalUsers", externalUser);
+        return new UserDto(res.data);
+    } catch (error) {
+        throw new StarDriveError(
+            await errorMessage(error as AxiosError),
+            // @ts-ignore
+            error.response.data.code
+        );
+    }
 }
 
 async function errorMessage(error: AxiosError) {
