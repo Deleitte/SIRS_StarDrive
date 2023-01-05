@@ -23,6 +23,7 @@ import { LogDto } from "@/models/LogDto";
 import type { NewPartDto } from "@/models/NewPartDto";
 import { RegisterResponseDto } from "@/models/RegisterResponseDto";
 import type { NewEngineerDto } from "@/models/NewEngineerDto";
+import { TotpDto } from "@/models/TotpDto";
 
 const http = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -74,6 +75,21 @@ http.interceptors.response.use(
 export async function login(loginRequest: LoginRequestDto) {
   try {
     const res = await http.post("/token", loginRequest);
+    const data = new LoginResponseDto(res.data);
+    const { setToken } = useAuthStore();
+    setToken(data.token);
+  } catch (error) {
+    throw new StarDriveError(
+      await errorMessage(error as AxiosError),
+      // @ts-ignore
+      error.response.data.code
+    );
+  }
+}
+
+export async function totp(totpDto: TotpDto) {
+  try {
+    const res = await http.post("/token/2fa", totpDto);
     const data = new LoginResponseDto(res.data);
     const { setToken } = useAuthStore();
     setToken(data.token);
