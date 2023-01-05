@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.context.annotation.Primary
+import org.springframework.core.convert.converter.Converter
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.ProviderManager
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider
@@ -22,8 +23,10 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
+import org.springframework.security.oauth2.jwt.MappedJwtClaimSetConverter
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.cors.CorsConfiguration
@@ -155,7 +158,11 @@ class SecurityConfig {
     @Primary
     @Qualifier("accessTokenDecoder")
     fun accessJwtDecoder(@Qualifier("accessToken") jwks: JWKSource<SecurityContext>): JwtDecoder =
-        NimbusJwtDecoder.withPublicKey(authTokenKey.toRSAPublicKey()).build()
+        NimbusJwtDecoder.withPublicKey(authTokenKey.toRSAPublicKey()).build().apply {
+            setClaimSetConverter(MappedJwtClaimSetConverter.withDefaults(
+                mapOf("2FA" to Converter<Any, Boolean>{ it as Boolean })
+            ))
+        }
 
     @Bean
     @Qualifier("refreshTokenDecoder")

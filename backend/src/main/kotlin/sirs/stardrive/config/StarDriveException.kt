@@ -24,6 +24,7 @@ enum class ErrorMessage(val message: String) {
     VALID_REFRESH_TOKEN("User still has a valid refresh token"),
     INVALID_REFRESH_TOKEN("Invalid Refresh Token"),
     INVALID_SIGNATURE("Invalid Signature"),
+    TWO_FACTOR_AUTHENTICATION_REQUIRED("Two factor authentication required"),
 }
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
