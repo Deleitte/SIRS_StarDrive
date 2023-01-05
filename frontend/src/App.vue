@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { RouterView } from "vue-router";
-import { computed, onMounted, ref } from "vue";
+import {RouterView} from "vue-router";
+import {computed, onMounted, ref} from "vue";
 
-import { useAuthStore } from "@/stores/auth";
+import {useAuthStore} from "@/stores/auth";
 import AccountMenu from "@/components/AccountMenu.vue";
 
 const drawer = ref(false);
@@ -51,15 +51,21 @@ const menuItems = [
     to: "/admin",
     showIf: () => authStore.loggedIn && authStore.role === "ADMIN",
   },
+  {
+    title: "Expense Report",
+    icon: "mdi-bank",
+    to: "/external",
+    showIf: () => authStore.loggedIn && authStore.role === "EXTERNAL",
+  },
 ];
 
 const filteredMenuItems = computed(() =>
-  menuItems.filter((item) => !item.showIf || item.showIf())
+    menuItems.filter((item) => !item.showIf || item.showIf())
 );
 
 const theme = ref("dark");
 const themeIcon = computed(() =>
-  theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"
+    theme.value === "dark" ? "mdi-moon-waxing-crescent" : "mdi-weather-sunny"
 );
 const toggleTheme = () => {
   theme.value = theme.value === "dark" ? "light" : "dark";
@@ -76,13 +82,13 @@ onMounted(async () => {
     <v-navigation-drawer v-model="drawer">
       <v-list>
         <v-list-item
-          v-for="item in filteredMenuItems"
-          :key="item.title"
-          :to="item.to"
-          :prepend-icon="item.icon"
-          :title="item.title"
-          link
-          @click="drawer = false"
+            v-for="item in filteredMenuItems"
+            :key="item.title"
+            :to="item.to"
+            :prepend-icon="item.icon"
+            :title="item.title"
+            link
+            @click="drawer = false"
         ></v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -96,13 +102,13 @@ onMounted(async () => {
 
       <template #append>
         <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
-        <account-menu />
+        <account-menu/>
       </template>
     </v-app-bar>
 
     <v-main class="fill-height">
       <v-container class="fill-height">
-        <router-view />
+        <router-view/>
       </v-container>
     </v-main>
   </v-app>

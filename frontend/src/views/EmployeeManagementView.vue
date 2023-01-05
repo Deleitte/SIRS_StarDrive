@@ -1,17 +1,11 @@
 <script setup lang="ts">
-import { ref } from "vue";
-import {
-  createEmployee,
-  createTeam,
-  getEmployees,
-  getNewUsers,
-  getTeams,
-} from "@/services/api";
-import { EmployeeDto } from "@/models/EmployeeDto";
-import { UserDto } from "@/models/UserDto";
-import { TeamDto } from "@/models/TeamDto";
-import { AssignEmployeeToTeamDto } from "@/models/AssignEmployeeToTeamDto";
-import { NewTeamDto } from "@/models/NewTeamDto";
+import {ref} from "vue";
+import {createEmployee, createTeam, getEmployees, getNewUsers, getTeams,} from "@/services/api";
+import {EmployeeDto} from "@/models/EmployeeDto";
+import {UserDto} from "@/models/UserDto";
+import {TeamDto} from "@/models/TeamDto";
+import {AssignEmployeeToTeamDto} from "@/models/AssignEmployeeToTeamDto";
+import {NewTeamDto} from "@/models/NewTeamDto";
 
 const employees = ref<EmployeeDto[]>([]);
 const dialogAssign = ref(false);
@@ -52,8 +46,8 @@ async function onSubmitAssign() {
     if (!selectedTeam.value || !selectedUser.value) return;
 
     const assignDto = new AssignEmployeeToTeamDto(
-      selectedUser.value.username,
-      selectedTeam.value.name
+        selectedUser.value.username,
+        selectedTeam.value.name
     );
     await createEmployee(assignDto);
     await fetchEmployees();
@@ -92,16 +86,16 @@ fetchTeams();
             <div class="text-center">
               <v-dialog v-model="dialogTeams">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" v-bind="props"> New Team </v-btn>
+                  <v-btn color="primary" v-bind="props"> New Team</v-btn>
                 </template>
                 <v-form @submit.prevent="onSubmitTeam">
                   <v-card>
                     <v-card-text>
-                      <v-text-field v-model="newTeam" label="Name" required />
-                      <v-text-field v-model="salary" label="Salary" required />
+                      <v-text-field v-model="newTeam" label="Name" required/>
+                      <v-text-field v-model="salary" label="Salary" required/>
                     </v-card-text>
                     <div class="text-center">
-                      <v-btn color="primary" type="submit"> Create </v-btn>
+                      <v-btn color="primary" type="submit"> Create</v-btn>
                     </div>
                   </v-card>
                 </v-form>
@@ -115,20 +109,20 @@ fetchTeams();
     <v-card-text>
       <v-table density="compact">
         <thead>
-          <tr>
-            <th class="text-left">Name</th>
-            <th class="text-center">Salary</th>
-          </tr>
+        <tr>
+          <th class="text-left">Name</th>
+          <th class="text-center">Salary</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="item in teams" :key="item.name">
-            <td class="text-left">
-              {{ item.name }}
-            </td>
-            <td class="text-center">
-              {{ item.salary }}
-            </td>
-          </tr>
+        <tr v-for="item in teams" :key="item.name">
+          <td class="text-left">
+            {{ item.name }}
+          </td>
+          <td class="text-center">
+            {{ item.salary }}
+          </td>
+        </tr>
         </tbody>
       </v-table>
     </v-card-text>
@@ -145,7 +139,7 @@ fetchTeams();
             <div class="text-center">
               <v-dialog v-model="dialogAssign">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" v-bind="props"> Assign Team </v-btn>
+                  <v-btn color="primary" v-bind="props"> Assign Team</v-btn>
                 </template>
                 <v-card>
                   <v-form @submit.prevent="onSubmitAssign">
@@ -153,27 +147,27 @@ fetchTeams();
                       <v-row>
                         <v-col>
                           <v-select
-                            v-model="selectedUser"
-                            label="User"
-                            :items="newUsers.concat(employees)"
-                            item-title="username"
-                            item-value="username"
-                            return-object
+                              v-model="selectedUser"
+                              label="User"
+                              :items="newUsers.concat(employees)"
+                              item-title="username"
+                              item-value="username"
+                              return-object
                           ></v-select>
                         </v-col>
                         <v-col>
                           <v-select
-                            v-model="selectedTeam"
-                            label="Team"
-                            :items="teams"
-                            item-title="name"
-                            item-value="name"
-                            return-object
+                              v-model="selectedTeam"
+                              label="Team"
+                              :items="teams"
+                              item-title="name"
+                              item-value="name"
+                              return-object
                           ></v-select>
                         </v-col>
                       </v-row>
                       <div class="text-center">
-                        <v-btn color="primary" type="submit"> Assign </v-btn>
+                        <v-btn color="primary" type="submit"> Assign</v-btn>
                       </div>
                     </v-container>
                   </v-form>
@@ -188,24 +182,24 @@ fetchTeams();
     <v-card-text>
       <v-table density="compact">
         <thead>
-          <tr>
-            <th class="text-left">Name</th>
-            <th class="text-center">Username</th>
-            <th class="text-center">Team</th>
-            <th class="text-center">Salary</th>
-            <th class="text-center">Absent Working days</th>
-            <th class="text-center">Parental Leaves</th>
-          </tr>
+        <tr>
+          <th class="text-left">Name</th>
+          <th class="text-center">Username</th>
+          <th class="text-center">Team</th>
+          <th class="text-center">Salary</th>
+          <th class="text-center">Absent Working days</th>
+          <th class="text-center">Parental Leaves</th>
+        </tr>
         </thead>
         <tbody>
-          <tr v-for="employee in employees">
-            <td>{{ employee.name }}</td>
-            <td class="text-center">{{ employee.username }}</td>
-            <td class="text-center">{{ employee.team }}</td>
-            <td class="text-center">{{ employee.salary }}</td>
-            <td class="text-center">{{ employee.absentWorkingDays }}</td>
-            <td class="text-center">{{ employee.parentalLeaves }}</td>
-          </tr>
+        <tr v-for="employee in employees">
+          <td>{{ employee.name }}</td>
+          <td class="text-center">{{ employee.username }}</td>
+          <td class="text-center">{{ employee.team }}</td>
+          <td class="text-center">{{ employee.salary }}</td>
+          <td class="text-center">{{ employee.absentWorkingDays }}</td>
+          <td class="text-center">{{ employee.parentalLeaves }}</td>
+        </tr>
         </tbody>
       </v-table>
     </v-card-text>
