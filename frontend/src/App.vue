@@ -3,7 +3,6 @@ import { RouterView } from "vue-router";
 import { computed, onMounted, ref } from "vue";
 
 import { useAuthStore } from "@/stores/auth";
-import { refreshToken } from "@/services/api";
 import AccountMenu from "@/components/AccountMenu.vue";
 
 const drawer = ref(false);
@@ -50,8 +49,8 @@ const menuItems = [
     title: "Dashboard",
     icon: "mdi-view-dashboard",
     to: "/admin",
-  showIf: () => authStore.loggedIn && authStore.role === "ADMIN",
-  }
+    showIf: () => authStore.loggedIn && authStore.role === "ADMIN",
+  },
 ];
 
 const filteredMenuItems = computed(() =>
@@ -96,10 +95,7 @@ onMounted(async () => {
       <v-app-bar-title>StarDrive</v-app-bar-title>
 
       <template #append>
-        <v-btn :prepend-icon="themeIcon" @click="toggleTheme"
-          >Toggle theme</v-btn
-        >
-
+        <v-btn :icon="themeIcon" @click="toggleTheme"></v-btn>
         <account-menu />
       </template>
     </v-app-bar>

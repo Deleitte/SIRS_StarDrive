@@ -394,7 +394,8 @@ export async function createEngineer(
   engineer: NewEngineerDto
 ): Promise<UserDto> {
   try {
-    await http.post("/engineers", engineer);
+    const res = await http.post("/engineers", engineer);
+    return new UserDto(res.data);
   } catch (error) {
     throw new StarDriveError(
       await errorMessage(error as AxiosError),

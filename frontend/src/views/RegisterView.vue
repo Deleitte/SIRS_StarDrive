@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import {ref} from "vue";
-import {register} from "@/services/api";
-import {StarDriveError} from "@/models/StarDriveError";
-import {RegisterRequestDto} from "@/models/RegisterRequestDto";
+import { ref } from "vue";
+import { register } from "@/services/api";
+import { StarDriveError } from "@/models/StarDriveError";
+import { RegisterRequestDto } from "@/models/RegisterRequestDto";
 import QrcodeVue from "qrcode.vue";
 
 const name = ref("");
@@ -20,9 +20,9 @@ async function onSubmit() {
   passwordErrorMessage.value = undefined;
   try {
     const registerRequest = new RegisterRequestDto(
-        name.value,
-        username.value,
-        password.value
+      name.value,
+      username.value,
+      password.value
     );
     let dto = await register(registerRequest);
     submitted.value = true;
@@ -54,50 +54,51 @@ function generateQrCode(totpSecret: string) {
       <v-card-text v-if="!submitted">
         <v-form v-model="form" @submit.prevent="onSubmit">
           <v-text-field
-              class="mb-1"
-              label="Name"
-              v-model="name"
-              name="name"
+            class="mb-1"
+            label="Name"
+            v-model="name"
+            name="name"
           ></v-text-field>
 
           <v-text-field
-              class="mb-1"
-              label="Username"
-              v-model="username"
-              name="username"
-              :error-messages="userErrorMessage"
+            class="mb-1"
+            label="Username"
+            v-model="username"
+            name="username"
+            :error-messages="userErrorMessage"
           >
           </v-text-field>
           <v-text-field
-              class="mb-1"
-              label="Password"
-              name="password"
-              :type="showPassword ? 'text' : 'password'"
-              v-model="password"
-              :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              @click:append-inner="showPassword = !showPassword"
-              :error-messages="passwordErrorMessage"
+            class="mb-1"
+            label="Password"
+            name="password"
+            :type="showPassword ? 'text' : 'password'"
+            v-model="password"
+            :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+            @click:append-inner="showPassword = !showPassword"
+            :error-messages="passwordErrorMessage"
           >
           </v-text-field>
           <v-btn
-              variant="tonal"
-              color="secondary"
-              width="100%"
-              height="50px"
-              type="submit"
-          >Log In
-          </v-btn
-          >
-        </v-form>
-      </v-card-text>
-      <v-card-text mx-auto align-center v-else>
-        <qrcode-vue :value="generateQrCode(totpKey)" level="M" :size="300" mx-auto/>
-        <v-btn
             variant="tonal"
             color="secondary"
             width="100%"
             height="50px"
-            @click="$router.push('/')">
+            type="submit"
+            >Log In
+          </v-btn>
+        </v-form>
+      </v-card-text>
+      <v-card-text v-else class="d-flex flex-column align-center">
+        <qrcode-vue :value="generateQrCode(totpKey)" level="M" :size="300" />
+        <v-btn
+          variant="tonal"
+          color="secondary"
+          width="100%"
+          height="50px"
+          class="mt-4"
+          @click="$router.push('/')"
+        >
           Continue
         </v-btn>
       </v-card-text>
