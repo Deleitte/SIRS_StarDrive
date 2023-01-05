@@ -50,6 +50,16 @@ class UserService(
                     null
                 )
             )
+            userRepository.save(
+                User(
+                    "Vasco Correia",
+                    "external",
+                    passwordEncoder.encode("external"),
+                    Role.EXTERNAL,
+                    totpEncryptor.encrypt("JLXJKTYVWWE3TPRQQNM6SU2RHE======"),
+                    null
+                )
+            )
         }
     }
 
