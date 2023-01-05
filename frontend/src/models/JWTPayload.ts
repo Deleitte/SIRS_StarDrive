@@ -4,6 +4,7 @@ export interface JWTPayload {
     iss: string;
     sub: string;
     scope: string;
+    [n: string]: boolean;
 }
 
 export class JWTPayloadData {
@@ -12,6 +13,7 @@ export class JWTPayloadData {
     issuer!: string;
     username!: string;
     scope!: string;
+    twoFactor!: boolean;
 
     constructor(json?: JWTPayload) {
         if (json) {
@@ -20,6 +22,7 @@ export class JWTPayloadData {
             this.issuer = json.iss;
             this.username = json.sub;
             this.scope = json.scope;
+            this.twoFactor = json["2FA"];
         }
     }
 }

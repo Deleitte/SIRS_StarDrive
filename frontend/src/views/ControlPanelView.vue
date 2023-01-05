@@ -12,12 +12,18 @@ import {
 import { ActuatorDto } from "@/models/ActuatorDto";
 import { NewSensorDto } from "@/models/NewSensorDto";
 import { NewActuatorDto } from "@/models/NewActuatorDto";
-import ActuatorPingIntervalDialog from "@/views/ActuatorPingIntervalDialog.vue";
+import ActuatorPingIntervalDialog from "@/components/ActuatorPingIntervalDialog.vue";
+import TotpDialog from "@/components/TotpDialog.vue";
+import {useAuthStore} from "@/stores/auth";
+
+
+const authStore = useAuthStore();
 
 const sensors = ref<SensorDto[]>([]);
 const actuators = ref<ActuatorDto[]>([]);
 const dialogSensor = ref(false);
 const dialogActuator = ref(false);
+const dialogTotp = ref(false);
 
 const dialogActuatorPingInterval = ref(false);
 const actuatorForPingInterval = ref<ActuatorDto | undefined>(undefined);
@@ -76,6 +82,11 @@ async function onSubmitActuator() {
 
 async function onToggleActuator(actuator: ActuatorDto) {
   try {
+    if (!authStore.twoFactor) {
+      dialogTotp.value = true;
+      return;
+    }
+
     if (actuator.on) await turnOffActuator(actuator);
     else await turnOnActuator(actuator);
     await fetchActuators();
@@ -85,6 +96,10 @@ async function onToggleActuator(actuator: ActuatorDto) {
 }
 
 function openDialogActuatorPingInterval(actuator: ActuatorDto) {
+  if (!authStore.twoFactor) {
+    dialogTotp.value = true;
+    return;
+  }
   actuatorForPingInterval.value = actuator;
   dialogActuatorPingInterval.value = true;
 }
@@ -164,10 +179,11 @@ setInterval(fetchActuators, 1000);
             <h2>Actuators</h2>
           </v-col>
           <v-col class="d-flex justify-end">
+            <v-btn v-if="!authStore.twoFactor" color="primary" @click="dialogTotp = true"> Enable 2FA </v-btn>
             <div class="text-center">
               <v-dialog v-model="dialogActuator">
                 <template v-slot:activator="{ props }">
-                  <v-btn color="primary" v-bind="props"> New Actuator </v-btn>
+                  <v-btn v-if="authStore.twoFactor" color="primary" v-bind="props"> New Actuator </v-btn>
                 </template>
 
                 <v-card>
@@ -252,6 +268,12 @@ setInterval(fetchActuators, 1000);
     :actuator="actuatorForPingInterval"
     @close-dialog="dialogActuatorPingInterval = false"
   />
+
+  <totp-dialog
+    :dialog="dialogTotp"
+    @close-dialog="dialogTotp = false"
+  />
+
 </template>
 
 <style scoped>
