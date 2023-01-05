@@ -21,7 +21,6 @@ class SensorController(val sensorService: SensorService) {
     fun readSensorValue(@PathVariable sensorName: String) = sensorService.readSensorValue(sensorName)
 
     @PatchMapping("/sensors/{sensorName}/update")
-    @PreAuthorize("isAuthenticated() && hasAuthority('SCOPE_ENGINEER')")
     fun updateSensorValue(@PathVariable sensorName: String, @RequestBody newValue: UpdateSensorValueDto) =
         sensorService.updateSensorValue(sensorName, newValue)
 
