@@ -26,7 +26,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-
 #### Ubuntu 20.04
 
 ```sh
@@ -47,6 +46,16 @@ pip install requests pycryptodome
 
 # Frontend (inside the frontend directory)
 npm run dev
+
+# Running an Actuator
+source stardrive_venv/bin/activate
+python3 scripts/sensors_actuators/actuator.py "<name>" "<path-to-key>"
+
+# Running a Sensor
+source stardrive_venv/bin/activate
+python3 scripts/sensors_actuators/sensor.py "<name>" <interval> "<path-to-key>"
+
+# The above mentioned keys can be generated with the script in scripts/sensors_actuators/generate_sensor_keys.sh
 ```
 
 #### Using the Nix Package Manager (Alternative)
@@ -63,6 +72,14 @@ gradle bootRun
 
 # Frontend (inside the frontend directory)
 npm run dev
+
+# Running an Actuator
+python3 scripts/sensors_actuators/actuator.py "<name>" "<path-to-key>"
+
+# Running a Sensor
+python3 scripts/sensors_actuators/sensor.py "<name>" <interval> "<path-to-key>"
+
+# The above mentioned keys can be generated with the script in scripts/sensors_actuators/generate_sensor_keys.sh
 ```
 
 Fill the missing fields in `backend/src/main/resources/application.properties`
@@ -71,6 +88,10 @@ Fill the missing fields in `backend/src/main/resources/application.properties`
 We are considering deployment in a structure similar to ours:
 
 ![Architecture Diagram](Esquema.png)
+
+We generate a Certificate Authority and use self-signed certificates for TLS / HTTPS.
+
+We generate the aforementioned certificates for the web server and the database server.
 
 The Network Interfaces are configured as follows:
 
