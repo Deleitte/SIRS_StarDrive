@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import {PartDto} from "@/models/PartDto";
+import type {PartDto} from "@/models/PartDto";
 import {buyPart, createPart, getParts} from "@/services/api";
 import {NewPartDto} from "@/models/NewPartDto";
 

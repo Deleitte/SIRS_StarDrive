@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import {UserDto} from "@/models/UserDto";
+import type {UserDto} from "@/models/UserDto";
 import {createEmployee, createEngineer, createExternalUser, getNewUsers} from "@/services/api";
 import {NewEngineerDto} from "@/models/NewEngineerDto";
 import {NewExternalUserDto} from "@/models/NewExternalUserDto";

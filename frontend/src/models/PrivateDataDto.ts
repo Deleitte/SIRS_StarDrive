@@ -1,12 +1,12 @@
 export class PrivateDataDto {
-    absentDays!: Number;
-    parentalLeaveDays!: Number;
+    absentWorkingDays!: Number;
+    parentalLeaves!: Number;
     salary!: Number;
 
     constructor(jsonObj?: PrivateDataDto) {
         if (jsonObj) {
-            this.absentDays = jsonObj.absentWorkingDays;
-            this.parentalLeaveDays = jsonObj.parentalLeaves;
+            this.absentWorkingDays = jsonObj.absentWorkingDays;
+            this.parentalLeaves = jsonObj.parentalLeaves;
             this.salary = jsonObj.salary;
         }
     }

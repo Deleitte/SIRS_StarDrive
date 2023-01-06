@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {ref} from "vue";
-import ExpenseDto from "@/models/ExpenseDto";
+import type ExpenseDto from "@/models/ExpenseDto";
 import {getExpenses} from "@/services/api";
 
 const expenses = ref<ExpenseDto[]>([]);

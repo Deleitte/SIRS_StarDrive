@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {LogDto} from "@/models/LogDto";
+import type {LogDto} from "@/models/LogDto";
 import {ref} from "vue";
 import {getLogs} from "@/services/api";
 
@@ -34,7 +34,7 @@ fetchLogs();
         </thead>
         <tbody>
 
-        <tr v-for="item in logs" :key="item.name">
+        <tr v-for="item in logs" :key="item.timestamp">
           <td class="text-left">
             {{ item.timestamp }}
           </td>

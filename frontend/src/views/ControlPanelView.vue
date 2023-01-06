@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SensorDto } from "@/models/SensorDto";
+import type { SensorDto } from "@/models/SensorDto";
 import { ref } from "vue";
 import {
   getSensors,
@@ -9,7 +9,7 @@ import {
   turnOffActuator,
   turnOnActuator,
 } from "@/services/api";
-import { ActuatorDto } from "@/models/ActuatorDto";
+import type { ActuatorDto } from "@/models/ActuatorDto";
 import { NewSensorDto } from "@/models/NewSensorDto";
 import { NewActuatorDto } from "@/models/NewActuatorDto";
 import ActuatorPingIntervalDialog from "@/components/ActuatorPingIntervalDialog.vue";

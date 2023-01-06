@@ -1,5 +1,5 @@
 import {EmployeeDto} from "@/models/EmployeeDto";
-import {WorkingShiftDto} from "@/models/WorkingShiftDto";
+import type {WorkingShiftDto} from "@/models/WorkingShiftDto";
 
 export class EmployeeWorkingShiftsDto {
   name!: String;

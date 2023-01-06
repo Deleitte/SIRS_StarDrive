@@ -1,5 +1,10 @@
 export default [
     {
+        path: "/",
+        name: "home",
+        component: () => import("../views/HomeView.vue"),
+    },
+    {
         path: "/controlpanel",
         name: "controlpanel",
         component: () => import("../views/ControlPanelView.vue"),

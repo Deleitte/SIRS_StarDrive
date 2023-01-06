@@ -4,7 +4,7 @@ export interface JWTPayload {
     iss: string;
     sub: string;
     scope: string;
-    [n: string]: boolean;
+    [n: string]: any;
 }
 
 export class JWTPayloadData {

@@ -1,5 +1,3 @@
-import {WorkingShiftDto} from "@/models/WorkingShiftDto";
-
 export class EmployeeDto {
   name!: string;
   username!: string;

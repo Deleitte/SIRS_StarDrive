@@ -25,6 +25,7 @@ import {RegisterResponseDto} from "@/models/RegisterResponseDto";
 import type {NewEngineerDto} from "@/models/NewEngineerDto";
 import type {TotpDto} from "@/models/TotpDto";
 import ExpenseDto from "@/models/ExpenseDto";
+import type {NewExternalUserDto} from "@/models/NewExternalUserDto";
 
 const http = axios.create({
     baseURL: import.meta.env.VITE_API_URL,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { register } from "@/services/api";
-import { StarDriveError } from "@/models/StarDriveError";
+import type { StarDriveError } from "@/models/StarDriveError";
 import { RegisterRequestDto } from "@/models/RegisterRequestDto";
 import QrcodeVue from "qrcode.vue";
 

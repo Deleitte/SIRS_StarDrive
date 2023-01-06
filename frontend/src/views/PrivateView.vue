@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { PrivateDataDto } from "@/models/PrivateDataDto";
+import type { PrivateDataDto } from "@/models/PrivateDataDto";
 import {ref} from "vue";
 import {getPrivateData} from "@/services/api";
 
@@ -20,8 +20,8 @@ fetchPrivateData();
   <div>
     <h1>Personal Data</h1>
     <p>Salary: {{privateData?.salary}}</p>
-    <p>Absent working days: {{privateData?.absentDays}}</p>
-    <p>Parental leaves: {{privateData?.parentalLeaveDays}}</p>
+    <p>Absent working days: {{privateData?.absentWorkingDays}}</p>
+    <p>Parental leaves: {{privateData?.parentalLeaves}}</p>
   </div>
 </template>
 

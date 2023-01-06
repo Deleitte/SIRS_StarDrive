@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { reactive, ref } from "vue";
 import { changePassword } from "@/services/api";
-import { StarDriveError } from "@/models/StarDriveError";
+import type { StarDriveError } from "@/models/StarDriveError";
 import { ChangePasswordDto } from "@/models/ChangePasswordDto";
 import router from "@/router";
 

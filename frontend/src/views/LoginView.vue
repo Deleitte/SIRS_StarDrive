@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { login } from "@/services/api";
 import { LoginRequestDto } from "@/models/LoginRequestDto";
 import router from "@/router";
-import { StarDriveError } from "@/models/StarDriveError";
+import type { StarDriveError } from "@/models/StarDriveError";
 import { useRedirectStore } from "@/stores/redirect";
 
 const { url, setUrl } = useRedirectStore();

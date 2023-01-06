@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { getEmployeesWorkingShifts, getStats } from "@/services/api";
-import { StatsDto } from "@/models/StatsDto";
-import { EmployeeWorkingShiftsDto } from "@/models/EmployeeWorkingShiftsDto";
+import type { StatsDto } from "@/models/StatsDto";
+import type { EmployeeWorkingShiftsDto } from "@/models/EmployeeWorkingShiftsDto";
+import {useAuthStore} from "@/stores/auth";
 
+const authStore = useAuthStore();
 const stats = ref<StatsDto>();
 const employees = ref<EmployeeWorkingShiftsDto[]>([]);
 
@@ -23,11 +25,16 @@ async function fetchEmployees() {
   }
 }
 
+function canSeeStats() {
+  return authStore.role === "ENGINEER" || authStore.role === "ADMIN" || authStore.role === "EMPLOYEE";
+}
+
 fetchStats();
 fetchEmployees();
 </script>
 
 <template>
+  <div v-if="canSeeStats()">
   <h1>Production Stats</h1>
   <div>
     <v-row>
@@ -40,7 +47,7 @@ fetchEmployees();
           </v-row>
           <v-row>
             <v-col class="d-flex justify-center align-center">{{
-              stats?.sensors
+              stats?.totalSensors
             }}</v-col>
           </v-row>
         </v-container>
@@ -54,7 +61,7 @@ fetchEmployees();
           </v-row>
           <v-row>
             <v-col class="d-flex justify-center align-center">{{
-              stats?.actuators
+              stats?.totalActuators
             }}</v-col>
           </v-row>
         </v-container>
@@ -107,7 +114,7 @@ fetchEmployees();
   </div>
   <div>
     <h1>Working Shifts</h1>
-    <div v-for="employee in employees" :key="employee.name">
+    <div v-for="employee in employees">
       <v-row>
         <v-col>
           <v-container>
@@ -127,21 +134,5 @@ fetchEmployees();
       </v-row>
     </div>
   </div>
-  <!--
-  <h1>{{ message }}</h1>
-
-  <div>
-    <div v-for="team in teams" :key="team.name">
-      <v-divider></v-divider>
-      <h2>{{ team.name }}</h2>
-      <h3>Team Salary: {{ team.salary }}</h3>
-      <h3>Team Employees:</h3>
-      <ul>
-        <li v-for="employee in team.employees" :key="employee.name">
-          {{ employee.name }}
-        </li>
-      </ul>
-    </div>
   </div>
-  -->
 </template>

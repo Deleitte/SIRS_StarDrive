@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {ref} from "vue";
 import {createEmployee, createTeam, getEmployees, getNewUsers, getTeams,} from "@/services/api";
-import {EmployeeDto} from "@/models/EmployeeDto";
-import {UserDto} from "@/models/UserDto";
-import {TeamDto} from "@/models/TeamDto";
+import type {EmployeeDto} from "@/models/EmployeeDto";
+import type {UserDto} from "@/models/UserDto";
+import type {TeamDto} from "@/models/TeamDto";
 import {AssignEmployeeToTeamDto} from "@/models/AssignEmployeeToTeamDto";
 import {NewTeamDto} from "@/models/NewTeamDto";
 
@@ -16,6 +16,11 @@ const newUsers = ref<UserDto[]>([]);
 const teams = ref<TeamDto[]>([]);
 const selectedTeam = ref<TeamDto>();
 const selectedUser = ref<UserDto>();
+
+const usernames = ref<UserName[]>();
+interface UserName {
+    username: string;
+}
 
 async function fetchEmployees() {
   try {
@@ -149,7 +154,7 @@ fetchTeams();
                           <v-select
                               v-model="selectedUser"
                               label="User"
-                              :items="newUsers.concat(employees)"
+                              :items="newUsers"
                               item-title="username"
                               item-value="username"
                               return-object

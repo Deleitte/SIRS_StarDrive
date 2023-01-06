@@ -1,6 +1,6 @@
 export class StatsDto {
-    sensors!: number;
-    actuators!: number;
+    totalSensors!: number;
+    totalActuators!: number;
     energyConsumption!: number;
     carsInProduction!: number;
     maxEnergyConsumption!: number;
@@ -8,8 +8,8 @@ export class StatsDto {
 
     constructor(jsonObj?: StatsDto) {
         if (jsonObj) {
-            this.sensors = jsonObj.totalSensors;
-            this.actuators = jsonObj.totalActuators;
+            this.totalSensors = jsonObj.totalSensors;
+            this.totalActuators = jsonObj.totalActuators;
             this.energyConsumption = jsonObj.energyConsumption;
             this.carsInProduction = jsonObj.carsInProduction;
             this.maxEnergyConsumption = jsonObj.maxEnergyConsumption;
