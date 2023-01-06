@@ -14,7 +14,8 @@ class Sensor(timeUpdatedMachine.TimeUpdatedMachine):
         data = { 'value': value }
         data['signature'] = self.request_body_signature(data)
         req = requests.patch(
-            f'http://localhost:8080/sensors/{self.name}/update', json=data
+            f'https://192.168.2.254/api/sensors/{self.name}/update', json=data,
+	    verify='ca.crt'
         )
         print('Success' if req.status_code == 200 else 'Failure')
 Sensor(sys.argv[1], int(sys.argv[2]), sys.argv[3])

@@ -11,11 +11,11 @@ from Crypto.PublicKey import RSA
 
 
 class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
-    def __init__(self, name, key_folder):   
+    def __init__(self, name, key_folder):
         self.on = True
         self.damaged = False
         super().__init__(name, key_folder)
-        
+
     def update(self):
         print("Requesting configs for {}".format(self.name))
         data = {
@@ -23,13 +23,15 @@ class Actuator(timeUpdatedMachine.TimeUpdatedMachine):
             }
         data['signature'] = self.request_body_signature(data)
         req = requests.patch(
-            f'http://localhost:8080/actuators/{self.name}',
+            f'https://192.168.2.254/api/actuators/{self.name}',
+	    verify='ca.crt',
             json=data
         )
+        print(req.text)
         response = json.loads(req.text)
         self.on = response['on']
         self.damaged = response['damaged']
         self.ping_interval = response['pingInterval']
         print(response)
-    
+
 Actuator(sys.argv[1], sys.argv[2])
