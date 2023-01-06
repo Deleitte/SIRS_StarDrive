@@ -35,7 +35,6 @@ class TeamController(private val teamService: TeamService) {
         teamService.addWorkingShift(employeeName, newWorkingShift)
 
     @GetMapping("/workingshifts")
-    @PreAuthorize("isAuthenticated() && (hasAuthority('SCOPE_ENGINEER') || hasAuthority('SCOPE_EMPLOYEE')) || hasAuthority('SCOPE_ADMIN')")
     fun getWorkingShifts(): List<EmployeeWorkingShiftsDto> = teamService.getWorkingShifts()
 
     @GetMapping("/employees")

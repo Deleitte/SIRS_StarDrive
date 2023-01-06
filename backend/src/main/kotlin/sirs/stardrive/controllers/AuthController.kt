@@ -17,7 +17,7 @@ import sirs.stardrive.models.*
 import sirs.stardrive.services.TokenService
 import sirs.stardrive.services.UserService
 
-@RestController("/auth")
+@RestController
 class AuthController(
     private val tokenService: TokenService,
     private val authenticationManager: AuthenticationManager,
@@ -28,7 +28,7 @@ class AuthController(
     // 1 hour
     private val cookieMaxAge = 3600
 
-    @PostMapping("/token")
+    @PostMapping("/auth/token")
     fun token(response: HttpServletResponse, @RequestBody userLogin: LoginRequestDto): LoginResponseDto {
         val authenticationToken = UsernamePasswordAuthenticationToken(userLogin.username, userLogin.password)
         val authentication = authenticationManager.authenticate(authenticationToken)
@@ -44,7 +44,7 @@ class AuthController(
         return LoginResponseDto(token)
     }
 
-    @PostMapping("/token/refresh")
+    @PostMapping("/auth/token/refresh")
     fun refreshToken(
         request: HttpServletRequest,
         @CookieValue(name = "refresh-token") refreshToken: String
@@ -54,7 +54,7 @@ class AuthController(
         return LoginResponseDto(tokenService.renewAccessToken(authentication))
     }
 
-    @PostMapping("/token/revoke")
+    @PostMapping("/auth/token/revoke")
     @PreAuthorize("isAuthenticated()")
     fun revokeToken(response: HttpServletResponse) {
         val authentication = SecurityContextHolder.getContext().authentication!!
@@ -66,7 +66,7 @@ class AuthController(
         response.addCookie(deleteRefreshTokenCookie)
     }
 
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     fun register(@RequestBody newUserDto: NewUserDto): RegisterResponseDto {
         userService.createUser(newUserDto)
         val authenticationToken = UsernamePasswordAuthenticationToken(newUserDto.username, newUserDto.password)
@@ -75,7 +75,7 @@ class AuthController(
         return RegisterResponseDto(token, userService.getTotpSecret(authentication.name))
     }
 
-    @PostMapping("/token/2fa")
+    @PostMapping("/auth/token/2fa")
     @PreAuthorize("isAuthenticated()")
     fun totp(response: HttpServletResponse, @RequestBody totpDto: TotpDto): LoginResponseDto {
         val authentication = SecurityContextHolder.getContext().authentication!!
@@ -90,7 +90,7 @@ class AuthController(
         return LoginResponseDto(token)
     }
 
-    @PostMapping("/changepassword")
+    @PostMapping("/auth/changepassword")
     @PreAuthorize("isAuthenticated()")
     fun changePassword(@RequestBody changePasswordDto: ChangePasswordDto) {
         userService.changePassword(changePasswordDto)

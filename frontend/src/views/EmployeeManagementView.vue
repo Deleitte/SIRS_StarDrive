@@ -17,11 +17,6 @@ const teams = ref<TeamDto[]>([]);
 const selectedTeam = ref<TeamDto>();
 const selectedUser = ref<UserDto>();
 
-const usernames = ref<UserName[]>();
-interface UserName {
-    username: string;
-}
-
 async function fetchEmployees() {
   try {
     employees.value = await getEmployees();

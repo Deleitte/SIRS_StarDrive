@@ -25,16 +25,11 @@ async function fetchEmployees() {
   }
 }
 
-function canSeeStats() {
-  return authStore.role === "ENGINEER" || authStore.role === "ADMIN" || authStore.role === "EMPLOYEE";
-}
-
 fetchStats();
 fetchEmployees();
 </script>
 
 <template>
-  <div v-if="canSeeStats()">
   <h1>Production Stats</h1>
   <div>
     <v-row>
@@ -133,6 +128,5 @@ fetchEmployees();
         </v-col>
       </v-row>
     </div>
-  </div>
   </div>
 </template>
