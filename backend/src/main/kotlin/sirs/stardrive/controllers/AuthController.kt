@@ -17,7 +17,7 @@ import sirs.stardrive.models.*
 import sirs.stardrive.services.TokenService
 import sirs.stardrive.services.UserService
 
-@RestController
+@RestController("/auth")
 class AuthController(
     private val tokenService: TokenService,
     private val authenticationManager: AuthenticationManager,
@@ -35,7 +35,7 @@ class AuthController(
         val token = tokenService.generateAccessToken(authentication)
         val refreshTokenCookie = Cookie("refresh-token", tokenService.generateRefreshToken(authentication)).apply {
             maxAge = cookieMaxAge
-            //secure = true TODO: secure = true if production
+            secure = true
             isHttpOnly = true
             path = "/"
         }
@@ -82,7 +82,7 @@ class AuthController(
         val token = tokenService.generate2FaToken(authentication, totpDto.guess)
         val refreshTokenCookie = Cookie("refresh-token", tokenService.generateRefreshToken(authentication)).apply {
             maxAge = cookieMaxAge
-            //secure = true TODO: secure = true if production
+            secure = true
             isHttpOnly = true
             path = "/"
         }
