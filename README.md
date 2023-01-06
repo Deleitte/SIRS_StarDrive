@@ -64,6 +64,7 @@ pip install requests pycryptodome
 npm run dev
 ```
 
+Fill the missing fields in `backend/src/main/resources/application.properties`
 ## Deployment
 
 We are considering deployment in a structure similar to ours:
