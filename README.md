@@ -57,6 +57,130 @@ npm run dev
 
 ## Deployment
 
+We are considering deployment in a structure similar to ours:
+
+![Architecture Diagram](Esquema.png)
+
+The Network Interfaces are configured as follows:
+
+They can be copied `/etc/netplan/01-network-manager-all.yaml` and applied with `sudo netplan try ; sudo netplan apply`
+```yaml
+# MongoDB
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+      enp0s3:
+          addresses:
+              - 192.168.0.1/24
+          routes:
+              - to: 192.168.1.0/24
+                via: 192.168.0.254
+```
+
+```yaml
+# firewall / router
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+      enp0s3:
+          addresses:
+              - 192.168.2.254/24
+      enp0s8:
+          addresses:
+              - 192.168.0.254/24
+      enp0s9:
+          addresses:
+              - 192.168.1.254/24
+```
+
+```yaml
+# Internal Machine (Employee & Engineer Client, Actuators & Sensors)
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+      enp0s3:
+          addresses:
+              - 192.168.2.1/24
+```
+
+```yaml
+# Web Server
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+      enp0s3:
+          addresses:
+              - 192.168.1.1/24
+          routes:
+              - to: 192.168.0.0/16
+                via: 192.168.1.254
+```
+
+The firewalls are configured as follows:
+
+These commands can be used with the bash shell
+```sh
+# Database Server
+sudo iptables -F
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -A INPUT -p tcp -s 192.168.1.1 -m tcp --dport 27017  -j ACCEPT
+sudo iptables -A OUTPUT -p tcp -d 192.168.1.1 -j ACCEPT
+
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+
+```sh
+# Firewall / Router
+sudo sysctl net.ipv4.ip_forward=1
+sysctl net.ipv4.conf.all.forwarding
+
+sudo iptables -F
+sudo iptables -t nat -F
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j DNAT --to-destination 192.168.1.1:443
+sudo iptables -t nat -A PREROUTING -p tcp -m tcp --dport 443 -j DNAT --to-destination 192.168.1.1
+sudo iptables -A FORWARD -p tcp -m tcp --dport 80 -j ACCEPT
+sudo iptables -A FORWARD -p tcp -m tcp --dport 443 -j ACCEPT
+sudo iptables -A FORWARD -s 192.168.1.1/32 -i enp0s9 -p tcp -j ACCEPT
+sudo iptables -A FORWARD -s 192.168.0.1/32 -i enp0s8 -p tcp -j ACCEPT
+sudo iptables -A FORWARD -s 192.168.56.0/24 -i enp0s10 -p tcp -j ACCEPT
+
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+
+```sh
+# Internal Machine (Employee & Engineer Client, Actuators & Sensors)
+sudo iptables -F
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -A INPUT -p tcp -s 192.168.2.254 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp -d 192.168.2.254 --dport 443 -j ACCEPT
+sudo iptables -A OUTPUT -p tcp -d 192.168.2.254 --dport 80 -j ACCEPT
+
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+
+```sh
+# Web Server
+sudo iptables -F
+sudo iptables -P INPUT DROP
+sudo iptables -P FORWARD DROP
+sudo iptables -P OUTPUT DROP
+sudo iptables -A OUTPUT -p tcp -j ACCEPT
+sudo iptables -A INPUT -p tcp -j ACCEPT
+
+sudo sh -c 'iptables-save > /etc/iptables/rules.v4'
+```
+
 For deploying this, we are currently using the [Caddy web server](https://caddyserver.com/), with the following config:
 
 ```
