@@ -7,30 +7,53 @@ The developed application is meant to facilitate StarDrive's management of the f
 These instructions will get you a copy of the project up and running on your local machine for development purposes. See deployment for notes on how to deploy the project on a live system.
 
 ### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Give examples
-```
+- Jdk 17
+- Node.js v18.12.1
+- Node Package Manager (npm) v8.19.2
+- Gradle v7.6 (Optional)
+- MongoDB >= v4
+- Docker
+- Nix Package Manager (Optional)
 
 ### Installing
 
-A step by step series of examples that tell you how to get a development env running
+#### Using the Nix Package Manager (Recommended)
 
-Say what the step will be
+```sh
+# From the root of the repository
+nix develop --experimental-features 'nix-command flakes'
 
+# MongoDB
+sudo docker run -p 27017:27017 -d mongo
+
+# Backend (inside the backend directory)
+gradle bootRun
+
+# Frontend (inside the frontend directory)
+npm run dev
 ```
-Give the example
-```
 
-And repeat
+#### Ubuntu 20.04
 
-```
-until finished
-```
+```sh
+sudo apt-get update -qq --yes && sudo apt-get install -qq --yes openjdk-17-jdk \
+                                                            nodejs npm gradle \
+                                                            python3 python3-pip \
+                                                            python3-venv
+# MongoDB
+sudo docker run -p 27017:27017 -d mongo
 
-End with an example of getting some data out of the system or using it for a little demo
+# Python for the actuarors / sensors
+python3 -m venv stardrive_venv
+source stardrive_venv/bin/activate
+pip install requests pycryptodome
+
+# Backend (inside the backend directory)
+./gradlew bootRun
+
+# Frontend (inside the frontend directory)
+npm run dev
+```
 
 ## Deployment
 
