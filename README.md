@@ -2,6 +2,15 @@
 
 The developed application is meant to facilitate StarDrive's management of the factory's production process. It provides the employees an interface to consult information on their job status, a dashboard to monitor the production process and statistics and an interface for managing employees and controlling more details of the production process of self-driving and remote control vehicles.
 
+## Built With
+
+* [Spring Boot](https://spring.io/projects/spring-boot) - The web framework used for the backend
+* [Kotlin](https://kotlinlang.org/) - The language used in the backend
+* [Gradle](https://gradle.org/) - Dependency Management and build tool for the backend
+* [NPM](https://www.npmjs.com/) - Dependency Management for the frontend
+* [VueJS](https://vuejs.org/) - The frontend framework we used
+* [Python](https://www.python.org/) - The language used for the actuator and sensor scripts
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development purposes. See deployment for notes on how to deploy the project on a live system.
@@ -225,14 +234,6 @@ This config can be adapted. We serve two different versions of the frontend, one
 
 Other web servers can also be used, similar configurations should be possible.
 
-## Built With
-
-* [Spring Boot](https://spring.io/projects/spring-boot) - The web framework used for the backend
-* [Kotlin](https://kotlinlang.org/) - The language used in the backend
-* [Gradle](https://gradle.org/) - Dependency Management and build tool for the backend
-* [NPM](https://www.npmjs.com/) - Dependency Management for the frontend
-* [VueJS](https://vuejs.org/) - The frontend framework we used
-* [Python](https://www.python.org/) - The language used for the actuator and sensor scripts
 
 ## Authors
 
