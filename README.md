@@ -26,21 +26,6 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Installing
 
-#### Using the Nix Package Manager (Recommended)
-
-```sh
-# From the root of the repository
-nix develop --experimental-features 'nix-command flakes'
-
-# MongoDB
-sudo docker run -p 27017:27017 -d mongo
-
-# Backend (inside the backend directory)
-gradle bootRun
-
-# Frontend (inside the frontend directory)
-npm run dev
-```
 
 #### Ubuntu 20.04
 
@@ -59,6 +44,22 @@ pip install requests pycryptodome
 
 # Backend (inside the backend directory)
 ./gradlew bootRun
+
+# Frontend (inside the frontend directory)
+npm run dev
+```
+
+#### Using the Nix Package Manager (Alternative)
+
+```sh
+# From the root of the repository
+nix develop --experimental-features 'nix-command flakes'
+
+# MongoDB
+sudo docker run -p 27017:27017 -d mongo
+
+# Backend (inside the backend directory)
+gradle bootRun
 
 # Frontend (inside the frontend directory)
 npm run dev
